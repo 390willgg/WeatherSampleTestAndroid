@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-parcelize")
     kotlin("kapt")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
@@ -45,16 +44,14 @@ android {
 kapt {
     correctErrorTypes = true
     arguments {
-        arg("AROUTER_MODULE_NAME", project.name)
-        arg("kapt.module.generated", "$projectDir/generated/kaptKotlin/")
+        arg("dagger.fastInit", "true")
+        arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
+        arg("dagger.hilt.android.internal.projectType", "1")
+        arg("dagger.hilt.internal.useAggregatingRootProcessor", "true")
     }
 }
 
-kapt {
-    arguments {
-        arg("AROUTER_MODULE_NAME", project.name)
-    }
-}
+
 //
 dependencies{
     //retrofit
@@ -85,6 +82,11 @@ dependencies{
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+
+    implementation(libs.dagger.android)
+    implementation(libs.dagger.android.support) // if you use the support libraries
+    kapt(libs.dagger.android.processor)
+
     implementation(libs.androidx.databinding.runtime)
 
     implementation (libs.lottie)

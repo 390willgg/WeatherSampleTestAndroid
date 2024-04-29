@@ -9,20 +9,13 @@ import com.example.weatherappsample1yt.domain.repository.CityRepository
 import okhttp3.OkHttpClient
 
 private class AMSCityListRepositoryImpl: CityRepository {
-    private val apiKey = ApiKeyProvider.getApiKey(ApiProvider.METEO_STAT)
+    private val apiKey = "50c10aac6amsheb6fd40c10eee3ep16d8ebjsna2ced97aed18"
     private val client = OkHttpClient.Builder().addInterceptor {
         val original = it.request()
         val requestBuilder = original.newBuilder()
         requestBuilder.addHeader("X-RapidAPI-Key", apiKey)
         requestBuilder.addHeader(
             "X-RapidAPI-Host", "ai-weather-by-meteosource.p.rapidapi.com"
-        )
-        requestBuilder.addHeader(
-            "Authorization",
-            "Bearer BQCQavno6gAGixz1zrPD6ygXYXwiYxseLyenRep7v9hQP8-5qicpiyR9SNf1bwE5Ao3g7ZGX00FXfx0GLj5sWduflAycVYM4khRyIZYmcAVOefdbFq4obTXnnfok6JjWUCJsEzFt5bqSjpQGYDwhhhLii20jLCvGPfGYvw4AiqsYUnmWMoiGioF2SZim16qh1yzrPzuCQKeobdeLjsfsdqvGrnuiuwmSc0Joe-X20se7aoA3oA"
-        )
-        requestBuilder.addHeader(
-            "Cookie", "HCLBSTICKY=7f1aab70544475f31df991214bd4e67c|Zidyw|Zidyr"
         )
         val request = requestBuilder.build()
         it.proceed(request)

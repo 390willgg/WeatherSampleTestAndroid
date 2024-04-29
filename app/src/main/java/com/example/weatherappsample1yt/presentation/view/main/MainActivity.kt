@@ -673,52 +673,40 @@ package com.example.weatherappsample1yt.presentation.view.main
 
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.weatherappsample1yt.databinding.ActivityMainBinding
-import com.example.weatherappsample1yt.domain.useCase.weather.WeatherUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     @Inject
-    @Named("OWWeather")
-    lateinit var owWeatherUseCase: WeatherUseCase
+    lateinit var weatherViewModelFactory: WeatherViewModel.Factory
+    private val weatherViewModel: WeatherViewModel by viewModels {
+        WeatherViewModel.provideFactory(
+            weatherViewModelFactory,
+            ApiProviderOptions.OPEN_WEATHER
+        )
+    }
 
-    @Inject
-    @Named("WAWeather")
-    lateinit var waWeatherUseCase: WeatherUseCase
-
-    @Inject
-    @Named("AMSWeather")
-    lateinit var amsWeatherUseCase: WeatherUseCase
-
-    private lateinit var selectedWeatherUseCase: WeatherUseCase
-    private lateinit var weatherViewModel: WeatherViewModel
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        selectedWeatherUseCase = when ("AMSWeather") {
-            "OWWeather" -> owWeatherUseCase
-            "WAWeather" -> waWeatherUseCase
-            "AMSWeather" -> amsWeatherUseCase
-            else -> throw IllegalArgumentException("Invalid condition")
-        }
-
-        weatherViewModel = ViewModelProvider(
-            this,
-            WeatherViewModelFactory(selectedWeatherUseCase)
-        )[WeatherViewModel::class.java]
 
         weatherViewModel.getCurrentWeather(35.0, 139.0, "metric")
+        Log.i("ResponseWeatherData", "Hallo pertama kali")
         weatherViewModel.currentWeather.observe(this) { response ->
-            Log.d("Response", response.toString())
+            if (response != null) {
+                Log.i("ResponseWeatherData", response.toString())
+            }
+            else{
+                Log.i("ResponseWeatherData", "Error")
+            }
         }
+        Log.i("ResponseWeatherData", "Hallo")
     }
 }

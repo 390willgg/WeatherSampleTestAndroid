@@ -1,8 +1,6 @@
 package com.example.weatherappsample1yt.data.repository.weather
 
 import android.util.Log
-import com.example.weatherappsample1yt.data.api.client.ApiKeyProvider
-import com.example.weatherappsample1yt.data.api.client.ApiProvider
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
 import com.example.weatherappsample1yt.data.repository.weather.dataSource.WeatherRemoteDataSource
@@ -11,7 +9,7 @@ import com.example.weatherappsample1yt.domain.repository.WeatherRepository
 import okhttp3.OkHttpClient
 
 private class WAWeatherRepositoryImpl : WeatherRepository {
-    private val apiKey = ApiKeyProvider.getApiKey(ApiProvider.WEATHER_API)
+    private val apiKey = "50c10aac6amsheb6fd40c10eee3ep16d8ebjsna2ced97aed18"
     private val client = OkHttpClient.Builder().addInterceptor { chain ->
         val original = chain.request()
         val requestBuilder = original.newBuilder()

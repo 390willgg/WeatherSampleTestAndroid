@@ -1,7 +1,5 @@
 package com.example.weatherappsample1yt.data.repository.city
 
-import com.example.weatherappsample1yt.data.api.client.ApiKeyProvider
-import com.example.weatherappsample1yt.data.api.client.ApiProvider
 import com.example.weatherappsample1yt.data.model.format.CityWeatherData
 import com.example.weatherappsample1yt.data.repository.city.dataSource.CityListRemoteDataSource
 import com.example.weatherappsample1yt.data.repository.city.dataSourceImpl.getWACityListRemoteDataSourceImpl
@@ -9,7 +7,7 @@ import com.example.weatherappsample1yt.domain.repository.CityRepository
 import okhttp3.OkHttpClient
 
 private class WACityListRepositoryImpl: CityRepository {
-    private val apiKey = ApiKeyProvider.getApiKey(ApiProvider.WEATHER_API)
+    private val apiKey = "50c10aac6amsheb6fd40c10eee3ep16d8ebjsna2ced97aed18"
     private val client = OkHttpClient.Builder().addInterceptor { chain ->
         val original = chain.request()
         val requestBuilder = original.newBuilder()
