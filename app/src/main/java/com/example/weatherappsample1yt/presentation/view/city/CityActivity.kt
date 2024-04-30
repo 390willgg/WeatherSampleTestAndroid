@@ -1,16 +1,41 @@
 package com.example.weatherappsample1yt.presentation.view.city
 
 import android.os.Bundle
-import android.os.PersistableBundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weatherappsample1yt.data.model.format.DataItemCity
+import com.example.weatherappsample1yt.databinding.ActivityCityBinding
+import com.example.weatherappsample1yt.presentation.view.main.ApiProviderOptions
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CityActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    @Inject
+    lateinit var citiesListViewModelFactory: CityViewModel.Factory
+    private val citiesListViewModel: CityViewModel by viewModels {
+        CityViewModel.provideFactory(
+            citiesListViewModelFactory,
+            ApiProviderOptions.OPEN_WEATHER
+        )
     }
+    private lateinit var binding: ActivityCityBinding
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityCityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        citiesListViewModel.getCitiesList("London", 3)
+        citiesListViewModel.citiesList.observe(this) { cityWeatherData ->
+            cityWeatherData?.let {
+                val cities: ArrayList<DataItemCity> = it.data
+                cities.forEach { city ->
+                    println(city.cityName)
+                }
+            }
+        }
+    }
 //    private lateinit var binding: ActivityCityBinding
 //    private lateinit var cityViewModel: CityViewModel
 //    private val cityAdapter by lazy { CityAdapter() }
