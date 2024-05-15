@@ -1,23 +1,5 @@
 package com.example.weatherappsample1yt.presentation.view.main
 
-//package com.example.weatherappsample1yt.presentation.view.main
-//
-//import android.content.Context
-//import android.content.Intent
-//import android.location.LocationManager
-//import android.os.Bundle
-//import android.util.Log
-//import android.view.WindowManager
-//import android.widget.Toast
-//import androidx.activity.enableEdgeToEdge
-//import androidx.activity.result.contract.ActivityResultContracts
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.core.view.ViewCompat
-//import com.example.weatherappsample1yt.databinding.ActivityMainBinding
-//import com.example.weatherappsample1yt.presentation.view.city.CityActivity
-//import com.google.android.gms.location.FusedLocationProviderClient
-//import com.google.android.gms.location.LocationCallback
-//
 //class MainActivity : AppCompatActivity() {
 //    private val RequestCode = 1000
 //    private lateinit var binding: ActivityMainBinding
@@ -671,42 +653,150 @@ package com.example.weatherappsample1yt.presentation.view.main
 //    }
 //}
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.weatherappsample1yt.databinding.ActivityMainBinding
+import com.example.weatherappsample1yt.domain.useCase.preferencesUser.PreferencesUseCase
+import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModel
+import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
+    lateinit var serviceLocationFactory : ServiceLocationViewModelFactory
+    @Inject
     lateinit var weatherViewModelFactory: WeatherViewModel.Factory
+    
+    @Inject
+    lateinit var preferencesUseCase : PreferencesUseCase
+    
+    private var _binding : ActivityMainBinding? = null
+    private val binding get() = _binding!!
+    
+    private lateinit var serviceLocationViewModel : ServiceLocationViewModel
     private val weatherViewModel: WeatherViewModel by viewModels {
-        WeatherViewModel.provideFactory(
-            weatherViewModelFactory,
-            ApiProviderOptions.OPEN_WEATHER
-        )
+        WeatherViewModel.provideFactory(weatherViewModelFactory, preferencesUseCase)
     }
-
-    private lateinit var binding: ActivityMainBinding
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions.entries.all { it.value }
+        if (granted) {
+            serviceLocationViewModel.getLocation(this)
+        } else {
+            Toast.makeText(this, "Permission denied for access to location", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        weatherViewModel.getCurrentWeather(35.0, 139.0, "metric")
-        Log.i("ResponseWeatherData", "Hallo pertama kali")
-        weatherViewModel.currentWeather.observe(this) { response ->
-            if (response != null) {
-                Log.i("ResponseWeatherData", response.toString())
+        
+        serviceLocationViewModel =
+            ViewModelProvider(this, serviceLocationFactory)[ServiceLocationViewModel::class.java]
+        
+        checkAndRequestPermissions()
+        observeViewModel()
+        
+    }
+    
+    private fun setUpRecyclerView() {
+        val foreCastAdapter = ForeCastAdapter()
+        val forecastItemDayAdapter = ForecastItemDayAdapter()
+        
+        binding.forecastView.apply {
+            layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            adapter = foreCastAdapter
+        }
+        
+        binding.forecastView2.apply {
+            layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            adapter = forecastItemDayAdapter
+        }
+    }
+    
+    private fun checkAndRequestPermissions() {
+        val requiredPermissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        val allPermissionsGranted = requiredPermissions.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
+        if (!allPermissionsGranted) {
+            requestPermissionLauncher.launch(requiredPermissions)
+        } else {
+            serviceLocationViewModel.getLocation(this)
+        }
+    }
+    
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            preferencesUseCase.saveApiPreferences(ApiProviderOptions.OPEN_WEATHER)
+            preferencesUseCase.saveTemperaturePreferences(TemperatureUnitOptions.Fahrenheit)
+            
+            serviceLocationViewModel.location.observe(this@MainActivity) { location ->
+                location?.let {
+                    val latitude = it.latitude
+                    val longitude = it.longitude
+                    fetchWeatherData(latitude, longitude)
+                } ?: Log.i("Location", "Error")
             }
-            else{
-                Log.i("ResponseWeatherData", "Error")
+            
+            weatherViewModel.loadTemperatureUnit()
+            weatherViewModel.temperatureUnit.observe(this@MainActivity) { temperatureUnit ->
+                temperatureUnit?.let {
+                    Log.i("TemperatureUnit", it.toString())
+                } ?: Log.i("TemperatureUnit", "Error")
+            }
+            weatherViewModel.currentWeather.observe(this@MainActivity) { response ->
+                response?.let {
+                    binding.apply {
+                        cityText.text = response.city
+                        statusText.text = response.weatherStatus
+                        detailedStatusText.text = response.weatherDescription
+                        currentTempTv.text = response.temperature.toString()
+                        maxTempText.text = response.maxTemperature.toString()
+                        minTempText.text = response.minTemperature.toString()
+                        humidityText.text = response.humidity.toString()
+                        windText.text = response.windSpeed.toString()
+                        rainPrecipitation.text = response.precipitation.toString()
+                    }
+                } ?: Log.i("ResponseWeatherData", "Error")
+            }
+            
+            weatherViewModel.forecastWeather.observe(this@MainActivity) { response ->
+                response?.let {
+                    Log.i("ResponseForecastData", it.toString())
+                } ?: Log.i("ResponseForecastData", "Error")
             }
         }
-        Log.i("ResponseWeatherData", "Hallo")
+    }
+    
+    private fun fetchWeatherData(latitude : Double, longitude : Double) {
+        weatherViewModel.getCurrentWeather(latitude, longitude)
+        weatherViewModel.getForecastWeather(latitude, longitude)
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

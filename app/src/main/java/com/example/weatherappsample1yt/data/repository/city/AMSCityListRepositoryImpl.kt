@@ -1,7 +1,5 @@
 package com.example.weatherappsample1yt.data.repository.city
 
-import com.example.weatherappsample1yt.data.api.client.ApiKeyProvider
-import com.example.weatherappsample1yt.data.api.client.ApiProvider
 import com.example.weatherappsample1yt.data.model.format.CityWeatherData
 import com.example.weatherappsample1yt.data.repository.city.dataSource.CityListRemoteDataSource
 import com.example.weatherappsample1yt.data.repository.city.dataSourceImpl.getAMSCityListRemoteDataSourceImpl

@@ -33,3 +33,5 @@ fun CurrentResponseApiAMS.toCurrentWeatherData(): CurrentWeatherData {
         precipitation = current?.precipitation?.total ?: 0.0
     )
 }
+
+//atur disini dari class temperatuer

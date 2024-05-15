@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.weatherappsample1yt"
-        minSdk = 31
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -30,11 +30,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         viewBinding = true
@@ -89,6 +89,11 @@ dependencies{
 
     implementation(libs.androidx.databinding.runtime)
 
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.play.services.location)
+    implementation (libs.kotlinx.coroutines.play.services)
+
     implementation (libs.lottie)
     implementation (libs.material)
     implementation(libs.androidx.core.ktx)
@@ -96,6 +101,11 @@ dependencies{
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
+    
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.androidx.core)
+    
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

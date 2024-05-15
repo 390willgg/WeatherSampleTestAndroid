@@ -36,8 +36,6 @@ class ForeCastAdapter : RecyclerView.Adapter<ForeCastAdapter.ForeCastViewHolder>
                 continue
             }
         }
-
-        // All attempts to parse the date string failed
         return null
     }
 
