@@ -1,7 +1,5 @@
 package com.example.weatherappsample1yt.data.repository.weather.dataSourceImpl
 
-import com.example.weatherappsample1yt.data.api.client.ApiKeyProvider
-import com.example.weatherappsample1yt.data.api.client.ApiProvider
 import com.example.weatherappsample1yt.data.api.server.ApiServiceOW
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
@@ -26,7 +24,7 @@ private class OWWeatherRemoteDataSourceImpl(
         lat: Double, lon: Double, units: String
     ): CurrentWeatherData? {
         val response = service?.getCurrentWeatherData(
-            lat, lon, units, ApiKeyProvider.getApiKey(ApiProvider.OPEN_WEATHER)
+            lat, lon, units, "49cac901dfcef84ab95c1c3d792d9a04"
         )
         return response?.toCurrentWeatherData()
     }
@@ -35,7 +33,7 @@ private class OWWeatherRemoteDataSourceImpl(
         lat: Double, lon: Double, units: String
     ): ForecastWeatherData? {
         val response = service?.getForecastWeather(
-            lat, lon, units, ApiKeyProvider.getApiKey(ApiProvider.OPEN_WEATHER)
+            lat, lon, units, "49cac901dfcef84ab95c1c3d792d9a04"
         )
         return response?.toForecastWeatherData()
     }

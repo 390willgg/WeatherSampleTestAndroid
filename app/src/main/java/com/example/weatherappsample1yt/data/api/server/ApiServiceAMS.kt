@@ -28,15 +28,15 @@ interface ApiServiceAMS {
     ): Response<ForecastHourlyResponseApiAMS>
 
     @GET("daily")
-    fun getDailyWeatherData(
+    suspend fun getDailyWeatherData(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("language") language: String,
         @Query("units") units: String
-    ): ForecastDailyResponseApiAMS
+    ): Response<ForecastDailyResponseApiAMS>
 
     @GET("find_places_prefix")
-    fun getCitiesWeatherData(
+    suspend fun getCitiesWeatherData(
         @Query("text") text: String,
         @Query("language") language: String
     ): CityResponseApiAMS

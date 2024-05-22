@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
@@ -28,26 +29,27 @@ class WeatherViewModel @AssistedInject constructor(
     
     private val _forecastWeather = MutableLiveData<ForecastWeatherData?>()
     val forecastWeather : LiveData<ForecastWeatherData?> = _forecastWeather
-    
+
     private val _temperatureUnit = MutableLiveData<TemperatureUnitOptions?>()
     val temperatureUnit : LiveData<TemperatureUnitOptions?> = _temperatureUnit
+
+    private var lat: Double = 0.0
+    private var lon: Double = 0.0
     
     init {
         viewModelScope.launch {
             try {
                 launch {
-                    preferencesUseCase.observeApiPreferences().collect {
-                        when (it) {
-                            ApiProviderOptions.OPEN_WEATHER -> owWeatherUseCase
-                            ApiProviderOptions.AI_METEOSOURCE -> amsWeatherUseCase
-                            ApiProviderOptions.WEATHER_API -> waWeatherUseCase
-                            else -> owWeatherUseCase
+                    preferencesUseCase.observeApiPreferences().asLiveData()
+                        .observeForever { apiProvider ->
+                            if (apiProvider != null) {
+                                fetchWeatherData(apiProvider)
                         }
                     }
                 }
                 
                 launch {
-                    preferencesUseCase.observeTemperaturePreferences().collect {
+                    preferencesUseCase.observeTemperaturePreferences().asLiveData().observeForever {
                         _temperatureUnit.value = it
                     }
                 }
@@ -73,14 +75,27 @@ class WeatherViewModel @AssistedInject constructor(
             }
         }
     }
-    
-    private suspend fun getWeatherUseCase() : WeatherUseCase {
-        val apiProvider = preferencesUseCase.getApiPreferences()
+
+    private fun getWeatherUseCase(apiProvider: ApiProviderOptions): WeatherUseCase {
         return when (apiProvider) {
             ApiProviderOptions.OPEN_WEATHER -> owWeatherUseCase
             ApiProviderOptions.AI_METEOSOURCE -> amsWeatherUseCase
             ApiProviderOptions.WEATHER_API -> waWeatherUseCase
-            else -> owWeatherUseCase
+        }
+    }
+
+    private fun fetchWeatherData(apiProvider: ApiProviderOptions) {
+        viewModelScope.launch {
+            try {
+                val weatherUseCase = getWeatherUseCase(apiProvider)
+                val currentWeather = weatherUseCase.getCurrentWeather(lat, lon, "metric")
+                _currentWeather.postValue(currentWeather)
+
+                val forecastWeather = weatherUseCase.getForecastWeather(lat, lon, "metric")
+                _forecastWeather.postValue(forecastWeather)
+            } catch (e: Exception) {
+                Log.e("WeatherViewModel", "Error fetching weather data", e)
+            }
         }
     }
     
@@ -88,9 +103,24 @@ class WeatherViewModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 preferencesUseCase.saveApiPreferences(apiProvider)
+                Log.i("WeatherViewModel", "API provider updated: $apiProvider")
             }
             catch (e : Exception) {
                 Log.e("WeatherViewModel", "Error updating API provider", e)
+            }
+        }
+    }
+
+    fun loadApiProvider() {
+        viewModelScope.launch {
+            try {
+                val apiProvider = preferencesUseCase.getApiPreferences()
+                apiProvider?.let {
+                    getWeatherUseCase(it).getCurrentWeather(lat, lon, "metric")
+                    getWeatherUseCase(it).getForecastWeather(lat, lon, "metric")
+                }
+            } catch (e: Exception) {
+                Log.e("WeatherViewModel", "Error loading API provider", e)
             }
         }
     }
@@ -101,7 +131,6 @@ class WeatherViewModel @AssistedInject constructor(
                 preferencesUseCase.saveTemperaturePreferences(unit)
             }
             catch (e : Exception) {
-                // Handle the exception
                 Log.e("WeatherViewModel", "Error updating temperature unit", e)
             }
         }
@@ -119,18 +148,20 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
+
     fun getCurrentWeather(lat: Double, lon: Double) {
+        this.lat = lat
+        this.lon = lon
         viewModelScope.launch {
             try {
-                val units = when (_temperatureUnit.value) {
-                    TemperatureUnitOptions.Fahrenheit -> "imperial"
-                    else -> "metric"
+                val apiProvider = preferencesUseCase.getApiPreferences()
+                val currentWeather = apiProvider?.let {
+                    getWeatherUseCase(it).getCurrentWeather(
+                        lat, lon, "metric"
+                    )
                 }
-                val currentWeather = getWeatherUseCase().getCurrentWeather(lat, lon, units)
-                val updateWeather = currentWeather?.convertTemperature(_temperatureUnit.value ?: TemperatureUnitOptions.Celsius)
                 _currentWeather.postValue(currentWeather)
             } catch (e: Exception) {
-                // Handle the exception
                 Log.e("WeatherViewModel", "Error getting current weather", e)
             }
         }
@@ -139,15 +170,14 @@ class WeatherViewModel @AssistedInject constructor(
     fun getForecastWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
-                val units = when (_temperatureUnit.value) {
-                    TemperatureUnitOptions.Fahrenheit -> "imperial"
-                    else -> "metric"
+                val apiProvider = preferencesUseCase.getApiPreferences()
+                val forecastWeather = apiProvider?.let {
+                    getWeatherUseCase(it).getForecastWeather(
+                        lat, lon, "metric"
+                    )
                 }
-                val forecastWeather = getWeatherUseCase().getForecastWeather(lat, lon, units)
-                val updateWeather = forecastWeather?.convertTemperature(_temperatureUnit.value ?: TemperatureUnitOptions.Celsius)
                 _forecastWeather.postValue(forecastWeather)
             } catch (e: Exception) {
-                // Handle the exception
                 Log.e("WeatherViewModel", "Error getting forecast weather", e)
             }
         }
@@ -160,9 +190,24 @@ class WeatherViewModel @AssistedInject constructor(
 }
 
 enum class ApiProviderOptions {
-    OPEN_WEATHER, AI_METEOSOURCE, WEATHER_API
+    OPEN_WEATHER, AI_METEOSOURCE, WEATHER_API;
+
+    override fun toString(): String {
+        return when (this) {
+            OPEN_WEATHER -> "Open Weather"
+            AI_METEOSOURCE -> "Ai Meteosource"
+            WEATHER_API -> "Weather Api"
+        }
+    }
 }
 
 enum class TemperatureUnitOptions {
-    Celsius, Fahrenheit
+    Celsius, Fahrenheit;
+
+    override fun toString(): String {
+        return when (this) {
+            Celsius -> "Celsius"
+            Fahrenheit -> "Fahrenheit"
+        }
+    }
 }

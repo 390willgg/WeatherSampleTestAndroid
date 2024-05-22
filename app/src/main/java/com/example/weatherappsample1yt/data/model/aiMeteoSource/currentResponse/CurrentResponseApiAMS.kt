@@ -1,6 +1,7 @@
 package com.example.weatherappsample1yt.data.model.aiMeteoSource.currentResponse
 
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
+import com.example.weatherappsample1yt.data.model.format.TemperatureModel
 import com.google.gson.annotations.SerializedName
 
 data class CurrentResponseApiAMS(
@@ -21,9 +22,9 @@ fun CurrentResponseApiAMS.toCurrentWeatherData(): CurrentWeatherData {
         country = null,
         latitude = latitude,
         longitude = longitude,
-        temperature = current?.temperature ?: 0.0,
-        maxTemperature = current?.temperature ?: 0.0,
-        minTemperature = current?.temperature ?: 0.0,
+        temperature = TemperatureModel(current?.temperature ?: 0.0),
+        maxTemperature = TemperatureModel(current?.temperature ?: 0.0),
+        minTemperature = TemperatureModel(current?.temperature ?: 0.0),
         weatherStatus = current?.summary ?: "",
         weatherDescription = current?.summary ?: "",
         weatherIcon = current?.icon ?: "",
@@ -33,5 +34,3 @@ fun CurrentResponseApiAMS.toCurrentWeatherData(): CurrentWeatherData {
         precipitation = current?.precipitation?.total ?: 0.0
     )
 }
-
-//atur disini dari class temperatuer

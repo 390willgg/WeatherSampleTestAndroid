@@ -2,6 +2,7 @@ package com.example.weatherappsample1yt.data.model.weatherAPI
 
 
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
+import com.example.weatherappsample1yt.data.model.format.TemperatureModel
 import com.google.gson.annotations.SerializedName
 
 data class CurrentResponseApiWA(
@@ -46,7 +47,7 @@ data class CurrentResponseApiWA(
         @SerializedName("uv")
         val uv: Int?,
         @SerializedName("vis_km")
-        val visKm: Int?,
+        val visKm: Double?,
         @SerializedName("vis_miles")
         val visMiles: Int?,
         @SerializedName("wind_degree")
@@ -93,16 +94,16 @@ data class CurrentResponseApiWA(
             country = location?.country ?: "",
             latitude = location?.lat ?: 0.0,
             longitude = location?.lon ?: 0.0,
-            temperature = current?.feelslikeC ?: 0.0,
-            maxTemperature = current?.tempC?.toDouble() ?: 0.0,
-            minTemperature = current?.tempC?.toDouble() ?: 0.0,
+            temperature = TemperatureModel(current?.feelslikeC ?: 0.0),
+            maxTemperature = TemperatureModel(current?.tempC?.toDouble() ?: 0.0),
+            minTemperature = TemperatureModel(current?.tempC?.toDouble() ?: 0.0),
             weatherStatus = current?.condition?.text ?: "",
             weatherDescription = current?.condition?.text ?: "",
             weatherIcon = current?.condition?.icon ?: "",
             windSpeed = current?.windKph ?: 0.0,
             humidity = current?.humidity ?: 0,
             icon = current?.condition?.icon ?: "",
-            precipitation = current?.precipMm?.toDouble() ?: 0.0
+            precipitation = current?.precipMm ?: 0.0
         )
     }
 }

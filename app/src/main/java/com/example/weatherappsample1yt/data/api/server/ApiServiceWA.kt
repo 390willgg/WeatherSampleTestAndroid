@@ -11,13 +11,13 @@ interface ApiServiceWA {
     suspend fun getCurrentWeatherData(
         @Query("q") location: String
     ): CurrentResponseApiWA
-
+    
     @GET("forecast.json")
     suspend fun getForecastWeatherData(
         @Query("q") location: String,
         @Query("days") days: Int
     ): ForecastResponseApiWA
-
+    
     @GET("search.json")
     suspend fun getCityWeatherData(
         @Query("q") query: String

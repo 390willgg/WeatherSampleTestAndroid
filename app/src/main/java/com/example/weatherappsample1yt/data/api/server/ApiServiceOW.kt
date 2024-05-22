@@ -24,7 +24,7 @@ interface ApiServiceOW {
     ): ForecastResponseApiOW
 
     @GET("geo/1.0/direct")
-    fun getCitiesList(
+    suspend fun getCitiesList(
         @Query("q") cityName: String,
         @Query("limit") limit: Int,
         @Query("appid") apiKey: String

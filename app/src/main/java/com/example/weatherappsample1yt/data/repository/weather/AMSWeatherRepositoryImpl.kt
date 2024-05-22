@@ -9,7 +9,7 @@ import com.example.weatherappsample1yt.domain.repository.WeatherRepository
 import okhttp3.OkHttpClient
 
 private class AMSWeatherRepositoryImpl : WeatherRepository {
-    private val apiKey = "50c10aac6amsheb6fd40c10eee3ep16d8ebjsna2ced97aed18"
+    private val apiKey = "f21ca166c8msh5a96ef3a0168171p118214jsn85d65948bad2"
     private val client = OkHttpClient.Builder().addInterceptor {
         val original = it.request()
         val requestBuilder = original.newBuilder()
@@ -22,6 +22,7 @@ private class AMSWeatherRepositoryImpl : WeatherRepository {
     }.build()
 
     val weatherRemoteDataSource: WeatherRemoteDataSource = getAMSWeatherRemoteDataSourceImpl(client)
+
     override suspend fun getCurrentWeatherData(
         lat: Double,
         lon: Double,

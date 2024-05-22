@@ -155,7 +155,7 @@
                                 android:shadowRadius="5"
                                 android:textAlignment="center"
                                 android:textSize="64sp"
-                                tools:text="°28C" />
+                                tools:text="28°C" />
 
                             <LinearLayout
                                 android:id="@+id/tempLayout"
@@ -185,7 +185,8 @@
                                     android:layout_gravity="center"
                                     android:textAlignment="center"
                                     android:textSize="18sp"
-                                    tools:text="°31C" />
+                                    tools:text="°31°C"
+                                    android:text="@string/maxMainTemperatureCurrent"/>
 
                                 <Space
                                     android:layout_width="16dp"
@@ -198,7 +199,8 @@
                                     android:layout_gravity="center"
                                     android:textAlignment="center"
                                     android:textSize="18sp"
-                                    tools:text="27°C" />
+                                    tools:text="27°C"
+                                    android:text="@string/minMainTemperatureCurrent"/>
 
                                 <Space
                                     android:layout_width="4dp"

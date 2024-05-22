@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/widgets">
+        <DropDownPreference
+            android:entries="@array/api_provider_options"
+            android:entryValues="@array/entry_values"
+            android:key="api_providers"
+            android:title="@string/title_dropdown_preference"
+            app:useSimpleSummaryProvider="true" />
+
+        <DropDownPreference
+            android:entries="@array/unit_temperature"
+            android:entryValues="@array/entry_values_unit_temperature"
+            android:key="unit_temperatures"
+            android:title="Unit Temperatures"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+</PreferenceScreen>

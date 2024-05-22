@@ -9,7 +9,7 @@ import com.example.weatherappsample1yt.domain.repository.WeatherRepository
 import okhttp3.OkHttpClient
 
 private class WAWeatherRepositoryImpl : WeatherRepository {
-    private val apiKey = "50c10aac6amsheb6fd40c10eee3ep16d8ebjsna2ced97aed18"
+    private val apiKey = "f21ca166c8msh5a96ef3a0168171p118214jsn85d65948bad2"
     private val client = OkHttpClient.Builder().addInterceptor { chain ->
         val original = chain.request()
         val requestBuilder = original.newBuilder()
@@ -33,7 +33,7 @@ private class WAWeatherRepositoryImpl : WeatherRepository {
     override suspend fun getForecastWeatherData(
         lat: Double, lon: Double, units: String
     ): ForecastWeatherData? {
-        Log.d("Repository", "Using WAWeatherRepository for getForecastWeatherData")
+        Log.d("Repository wa weather data", "lat: $lat, lon: $lon, units: $units: ${weatherRemoteDataSource.getForecast(lat, lon, units)}")
         return weatherRemoteDataSource.getForecast(lat, lon, units)
     }
 }

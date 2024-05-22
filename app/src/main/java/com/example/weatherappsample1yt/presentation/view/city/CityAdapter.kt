@@ -11,46 +11,47 @@ import com.example.weatherappsample1yt.data.model.format.DataItemCity
 import com.example.weatherappsample1yt.databinding.CityViewholderBinding
 import com.example.weatherappsample1yt.presentation.view.main.MainActivity
 
-class CityAdapter: RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
-    private lateinit var binding: CityViewholderBinding
-    inner class CityViewHolder : RecyclerView.ViewHolder(binding.root)
+class CityAdapter : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        binding = CityViewholderBinding.inflate(inflater, parent, false)
-        return CityViewHolder()
+        val binding =
+            CityViewholderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CityViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
-        val binding = CityViewholderBinding.bind(holder.itemView)
         val city = differ.currentList[position]
-        binding.apply {
-            cityText.text = city.cityName
-
-            cityText.setOnClickListener {
-                Toast.makeText(root.context, "Chip clicked", Toast.LENGTH_SHORT).show()
-                val intent = Intent(root.context, MainActivity::class.java)
-                intent.putExtra("lat", city.latitude)
-                intent.putExtra("lon", city.longitude)
-                intent.putExtra("name", city.cityName)
-                binding.root.context.startActivity(intent)
-            }
-        }
+        holder.bind(city)
     }
 
     override fun getItemCount(): Int = differ.currentList.size
 
-    private val differCallBack = object : DiffUtil.ItemCallback<DataItemCity>() {
-        override fun areItemsTheSame(
-            oldItem: DataItemCity, newItem: DataItemCity
-        ): Boolean {
-            return oldItem == newItem
+    inner class CityViewHolder(private val binding: CityViewholderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(city: DataItemCity) {
+            binding.cityText.text = city.cityName
+            binding.cityText.setOnClickListener {
+                navigateToMainActivity(city)
+            }
         }
 
-        override fun areContentsTheSame(
-            oldItem: DataItemCity,
-            newItem: DataItemCity
-        ): Boolean {
+        private fun navigateToMainActivity(city: DataItemCity) {
+            Toast.makeText(binding.root.context, "Chip clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(binding.root.context, MainActivity::class.java).apply {
+                putExtra("lat", city.latitude)
+                putExtra("lon", city.longitude)
+                putExtra("name", city.cityName)
+            }
+            binding.root.context.startActivity(intent)
+        }
+    }
+
+    private val differCallBack = object : DiffUtil.ItemCallback<DataItemCity>() {
+        override fun areItemsTheSame(oldItem: DataItemCity, newItem: DataItemCity): Boolean {
+            return oldItem.cityName == newItem.cityName // Assuming cityName is unique
+        }
+
+        override fun areContentsTheSame(oldItem: DataItemCity, newItem: DataItemCity): Boolean {
             return oldItem == newItem
         }
     }

@@ -5,7 +5,10 @@ import com.example.weatherappsample1yt.data.model.format.DailyDetail
 import com.example.weatherappsample1yt.data.model.format.ForecastDetail
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
 import com.example.weatherappsample1yt.data.model.format.HourlyDetail
+import com.example.weatherappsample1yt.data.model.format.TemperatureModel
 import com.google.gson.annotations.SerializedName
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 data class ForecastResponseApiWA(
     @SerializedName("current")
@@ -50,8 +53,7 @@ data class ForecastResponseApiWA(
         val tempF: Double?,
         @SerializedName("uv")
         val uv: Int?,
-        @SerializedName("vis_km")
-        val visKm: Int?,
+        @SerializedName("vis_km") val visKm: Double?,
         @SerializedName("vis_miles")
         val visMiles: Int?,
         @SerializedName("wind_degree")
@@ -209,8 +211,7 @@ data class ForecastResponseApiWA(
                 val timeEpoch: Int?,
                 @SerializedName("uv")
                 val uv: Int?,
-                @SerializedName("vis_km")
-                val visKm: Int?,
+                @SerializedName("vis_km") val visKm: Double?,
                 @SerializedName("vis_miles")
                 val visMiles: Int?,
                 @SerializedName("will_it_rain")
@@ -262,67 +263,73 @@ data class ForecastResponseApiWA(
     )
 
 }
-    fun ForecastResponseApiWA.toForecastWeatherData(): ForecastWeatherData {
-        // Iterate through each day in the forecast
-        var dailyDetail: List<DailyDetail>? = null
-        var hourlyDetails: List<HourlyDetail>? = null
-        this.forecast?.forecastday?.forEach { forecastDay ->
-            // Extracting daily details from the day part of forecastDay
-            dailyDetail = listOf(
-                DailyDetail(
-                    date = forecastDay?.date,
-                    maxTemp = forecastDay?.day?.maxtempC,
-                    minTemp = forecastDay?.day?.mintempC,
-                    condition = forecastDay?.day?.condition?.text,
-                    precipitation = forecastDay?.day?.totalprecipMm,
-                    pressure = null, // Add missing parameters
-                    humidity = null,
-                    windSpeed = null,
-                    windDirection = null,
-                    uvIndex = forecastDay?.day?.uv?.toDouble(),
-                    icon = forecastDay?.day?.condition?.icon,
-                    description = forecastDay?.day?.condition?.text,
-                    temp = forecastDay?.day?.avgtempC,
-                )
-            )
 
-            forecastDay?.hour?.forEach { hourlyData ->
-                hourlyData?.let {
-                    // Each hourly data is added with a reference to the daily summary
-                    hourlyDetails = listOf(
-                        HourlyDetail(
-                            time = it.time,
-                            temp = it.tempC,
-                            feelsLike = it.feelslikeC,
-                            condition = it.condition?.text,
-                            precipitation = it.precipMm,
-                            windSpeed = it.windKph,
-                            windDirection = it.windDir,
-                            icon = it.condition?.icon,
-                            description = it.condition?.text,
-                            pressure = it.pressureMb?.toDouble(),
-                            humidity = it.humidity,
-                            uvIndex = it.uv?.toDouble(),
-                            maxTemp = it.dewpointC,
-                            minTemp = it.heatindexC
-                        )
-                    )
-                }
-            }
-        }
-
-        // Retrieve location data
-        val country = this.location?.country
-        val city = this.location?.name
-        val lat = this.location?.lat
-        val lon = this.location?.lon
-
-        return ForecastWeatherData(
-            country = country,
-            city = city,
-            lat = lat,
-            lon = lon,
-            timezone = this.location?.tzId,
-            forecasts = ForecastDetail(dailyDetails = dailyDetail, hourlyDetails = hourlyDetails)
-        )
+private fun parseDate(dateString: String): String? {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US)
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+    return try {
+        val date = inputFormat.parse(dateString)
+        date?.let { outputFormat.format(it) }
+    } catch (e: Exception) {
+        null
     }
+}
+
+private fun parseDateToFullFormat(dateString: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+    val date = inputFormat.parse(dateString)
+    return outputFormat.format(date!!)
+}
+
+fun ForecastResponseApiWA.toForecastWeatherData(): ForecastWeatherData {
+    val dailyDetails = this.forecast?.forecastday?.mapNotNull { forecastDay ->
+        forecastDay?.day?.let {
+            DailyDetail(
+                date = forecastDay.date?.let { it1 -> parseDateToFullFormat(it1) }, // Assuming date is in "yyyy-MM-dd" format
+                maxTemp = TemperatureModel(forecastDay.day.maxtempC),
+                minTemp = TemperatureModel(forecastDay.day.mintempC),
+                condition = forecastDay.day.condition?.text,
+                precipitation = forecastDay.day.totalprecipMm,
+                pressure = null,
+                humidity = null,
+                windSpeed = null,
+                windDirection = null,
+                uvIndex = forecastDay.day.uv?.toDouble(),
+                icon = forecastDay.day.condition?.icon,
+                description = forecastDay.day.condition?.text,
+                temp = TemperatureModel(forecastDay.day.avgtempC)
+            )
+        }
+    }?.toList()
+
+    val hourlyDetails = this.forecast?.forecastday?.flatMap { forecastDay ->
+        forecastDay?.hour?.mapNotNull { hour ->
+            HourlyDetail(
+                time = hour?.time?.let { parseDate(it).toString() }, // Assuming time is in "yyyy-MM-dd HH:mm:ss" format
+                temp = TemperatureModel(hour?.tempC),
+                feelsLike = hour?.feelslikeC,
+                condition = hour?.condition?.text,
+                precipitation = hour?.precipMm,
+                windSpeed = hour?.windKph,
+                windDirection = hour?.windDir,
+                icon = hour?.condition?.icon,
+                description = hour?.condition?.text,
+                pressure = hour?.pressureMb?.toDouble(),
+                humidity = hour?.humidity,
+                uvIndex = hour?.uv?.toDouble(),
+                maxTemp = TemperatureModel(hour?.dewpointC),
+                minTemp = TemperatureModel(hour?.heatindexC)
+            )
+        } ?: listOf()
+    } ?: listOf()
+
+    return ForecastWeatherData(
+        country = this.location?.country,
+        city = this.location?.name,
+        lat = this.location?.lat,
+        lon = this.location?.lon,
+        timezone = this.location?.tzId,
+        forecasts = ForecastDetail(dailyDetails = dailyDetails, hourlyDetails = hourlyDetails)
+    )
+}

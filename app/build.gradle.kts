@@ -38,19 +38,20 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.12"
     }
 }
 
 kapt {
     correctErrorTypes = true
-    arguments {
-        arg("dagger.fastInit", "true")
-        arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
-        arg("dagger.hilt.android.internal.projectType", "1")
-        arg("dagger.hilt.internal.useAggregatingRootProcessor", "true")
-    }
 }
 
+hilt {
+    enableAggregatingTask = true
+}
 
 //
 dependencies{
@@ -81,10 +82,13 @@ dependencies{
     implementation (libs.androidx.fragment.ktx)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.ui.text.android)
+    implementation(libs.androidx.preference)
+    debugImplementation(libs.androidx.ui.tooling)
     kapt(libs.hilt.android.compiler)
 
     implementation(libs.dagger.android)
-    implementation(libs.dagger.android.support) // if you use the support libraries
+    implementation(libs.dagger.android.support)
     kapt(libs.dagger.android.processor)
 
     implementation(libs.androidx.databinding.runtime)
@@ -93,6 +97,12 @@ dependencies{
 
     implementation(libs.play.services.location)
     implementation (libs.kotlinx.coroutines.play.services)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+
+    implementation(libs.androidx.preference.ktx)
 
     implementation (libs.lottie)
     implementation (libs.material)
@@ -108,5 +118,12 @@ dependencies{
     
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    debugImplementation(libs.ui.tooling.preview)
 }
 

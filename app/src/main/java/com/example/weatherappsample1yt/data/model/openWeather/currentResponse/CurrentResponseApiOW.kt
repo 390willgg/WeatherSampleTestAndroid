@@ -1,6 +1,7 @@
 package com.example.weatherappsample1yt.data.model.openWeather.currentResponse
 
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
+import com.example.weatherappsample1yt.data.model.format.TemperatureModel
 import com.example.weatherappsample1yt.data.model.openWeather.forecastResponse.Rain
 import com.google.gson.annotations.SerializedName
 
@@ -27,9 +28,9 @@ data class CurrentResponseApiOW(
             country = this.sys?.country ?: "",
             latitude = this.coord?.lat ?: 0.0,
             longitude = this.coord?.lon ?: 0.0,
-            temperature = this.main?.temp ?: 0.0,
-            maxTemperature = this.main?.tempMax ?: 0.0,
-            minTemperature = this.main?.tempMin ?: 0.0,
+            temperature = TemperatureModel(this.main?.temp ?: 0.0),
+            maxTemperature = TemperatureModel(this.main?.tempMax ?: 0.0),
+            minTemperature = TemperatureModel(this.main?.tempMin ?: 0.0),
             weatherStatus = this.weather?.get(0)?.main ?: "",
             weatherDescription = this.weather?.get(0)?.description ?: "",
             weatherIcon = this.weather?.get(0)?.icon ?: "",

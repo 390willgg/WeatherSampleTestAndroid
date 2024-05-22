@@ -7,7 +7,7 @@ import com.example.weatherappsample1yt.domain.repository.CityRepository
 import okhttp3.OkHttpClient
 
 private class WACityListRepositoryImpl: CityRepository {
-    private val apiKey = "50c10aac6amsheb6fd40c10eee3ep16d8ebjsna2ced97aed18"
+    private val apiKey = "cad2020fd9msh155e92cfe3d3562p1c30cfjsnc23e42a410cd"
     private val client = OkHttpClient.Builder().addInterceptor { chain ->
         val original = chain.request()
         val requestBuilder = original.newBuilder()

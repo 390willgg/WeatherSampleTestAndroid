@@ -1,9 +1,10 @@
 package com.example.weatherappsample1yt.data.model.aiMeteoSource.forecastResponse
 
-import com.example.weatherappsample1yt.data.model.format.ForecastDetail
-import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
 import com.example.weatherappsample1yt.data.model.format.HourlyDetail
+import com.example.weatherappsample1yt.data.model.format.TemperatureModel
 import com.google.gson.annotations.SerializedName
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 data class ForecastHourlyResponseApiAMS(
     @SerializedName("elevation") val elevation: Int?,
@@ -14,35 +15,37 @@ data class ForecastHourlyResponseApiAMS(
     @SerializedName("units") val units: String?
 )
 
-fun ForecastHourlyResponseApiAMS.toForecastWeatherData(): ForecastWeatherData {
-    val hourlyDetails = this.hourly?.data?.map { data ->
-        HourlyDetail(
-            time = data?.date,
-            temp = data?.temperature,
-            feelsLike = data?.feelsLike,
-            condition = data?.weather,
-            icon = data?.icon.toString(),
-            description = data?.summary,
-            uvIndex = data?.uvIndex,
-            maxTemp = null, // You might need to fill this from another source
-            minTemp = null, // You might need to fill this from another source
-            windSpeed = data?.wind?.speed,
-            windDirection = data?.wind?.angle.toString(),
-            pressure = data?.pressure,
-            humidity = data?.humidity,
-            precipitation = data?.precipitation?.total
-        )
+fun convertDateFormat(inputDateString: String): String? {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+    return try {
+        val date = inputFormat.parse(inputDateString)
+        date?.let { outputFormat.format(it) }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
+}
 
-    val latitude = this.lat?.replace(Regex("[^\\d.]"), "")?.toDoubleOrNull() ?: 0.0
-    val longitude = this.lon?.replace(Regex("[^\\d.]"), "")?.toDoubleOrNull() ?: 0.0
-
-    return ForecastWeatherData(
-        country = null, // You might need to fill this from another source
-        city = null, // You might need to fill this from another source
-        lat = latitude, lon = longitude, timezone = this.timezone, forecasts = ForecastDetail(
-            dailyDetails = null, // You might need to fill this from another source
-            hourlyDetails = hourlyDetails
-        )
-    )
+fun ForecastHourlyResponseApiAMS.toHourlyDetailsList(): List<HourlyDetail> {
+    return this.hourly?.data?.mapNotNull { data ->
+        data?.let {
+            HourlyDetail(
+                time = it.date?.let { it1 -> convertDateFormat(it1) },
+                temp = TemperatureModel(it.temperature),
+                feelsLike = it.feelsLike,
+                condition = it.weather,
+                icon = it.icon?.toString() ?: "default", // Adjusted to handle null icon
+                description = it.summary,
+                uvIndex = it.uvIndex,
+                maxTemp = null, // Placeholder, consider providing a mechanism to fill this
+                minTemp = null, // Placeholder, consider providing a mechanism to fill this
+                windSpeed = it.wind?.speed,
+                windDirection = it.wind?.angle?.toString() ?: "N/A", // Adjusted to handle null wind direction
+                pressure = it.pressure,
+                humidity = it.humidity,
+                precipitation = it.precipitation?.total
+            )
+        }
+    }.orEmpty() // Ensures a non-null list is returned
 }
