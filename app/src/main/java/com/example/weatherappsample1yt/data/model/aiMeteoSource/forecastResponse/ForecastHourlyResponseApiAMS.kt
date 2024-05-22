@@ -32,7 +32,7 @@ fun ForecastHourlyResponseApiAMS.toHourlyDetailsList(): List<HourlyDetail> {
         data?.let {
             HourlyDetail(
                 time = it.date?.let { it1 -> convertDateFormat(it1) },
-                temp = TemperatureModel(it.temperature),
+                temp = it.temperature?.let { it1 -> TemperatureModel(it1) },
                 feelsLike = it.feelsLike,
                 condition = it.weather,
                 icon = it.icon?.toString() ?: "default", // Adjusted to handle null icon

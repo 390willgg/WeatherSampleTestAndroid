@@ -80,9 +80,9 @@ fun ForecastDailyResponseApiAMS.toDailyDetailsList(): List<DailyDetail>? {
         dailyData?.let {
             DailyDetail(
                 date = it.day?.let { it1 -> parseDate(it1) },
-                temp = TemperatureModel(it.temperature),
-                maxTemp = TemperatureModel(it.feelsLikeMax),
-                minTemp = TemperatureModel(it.feelsLikeMin),
+                temp = it.temperature?.let { it1 -> TemperatureModel(it1) },
+                maxTemp = it.feelsLikeMax?.let { it1 -> TemperatureModel(it1) },
+                minTemp = it.feelsLikeMin?.let { it1 -> TemperatureModel(it1) },
                 condition = it.summary,
                 icon = it.icon.toString(),
                 description = it.summary,

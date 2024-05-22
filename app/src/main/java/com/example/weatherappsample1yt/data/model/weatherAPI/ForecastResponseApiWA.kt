@@ -287,8 +287,8 @@ fun ForecastResponseApiWA.toForecastWeatherData(): ForecastWeatherData {
         forecastDay?.day?.let {
             DailyDetail(
                 date = forecastDay.date?.let { it1 -> parseDateToFullFormat(it1) }, // Assuming date is in "yyyy-MM-dd" format
-                maxTemp = TemperatureModel(forecastDay.day.maxtempC),
-                minTemp = TemperatureModel(forecastDay.day.mintempC),
+                maxTemp = forecastDay.day.maxtempC?.let { it1 -> TemperatureModel(it1) },
+                minTemp = forecastDay.day.mintempC?.let { it1 -> TemperatureModel(it1) },
                 condition = forecastDay.day.condition?.text,
                 precipitation = forecastDay.day.totalprecipMm,
                 pressure = null,
@@ -298,7 +298,7 @@ fun ForecastResponseApiWA.toForecastWeatherData(): ForecastWeatherData {
                 uvIndex = forecastDay.day.uv?.toDouble(),
                 icon = forecastDay.day.condition?.icon,
                 description = forecastDay.day.condition?.text,
-                temp = TemperatureModel(forecastDay.day.avgtempC)
+                temp = forecastDay.day.avgtempC?.let { it1 -> TemperatureModel(it1) }
             )
         }
     }?.toList()
@@ -307,7 +307,7 @@ fun ForecastResponseApiWA.toForecastWeatherData(): ForecastWeatherData {
         forecastDay?.hour?.mapNotNull { hour ->
             HourlyDetail(
                 time = hour?.time?.let { parseDate(it).toString() }, // Assuming time is in "yyyy-MM-dd HH:mm:ss" format
-                temp = TemperatureModel(hour?.tempC),
+                temp = hour?.tempC?.let { TemperatureModel(it) },
                 feelsLike = hour?.feelslikeC,
                 condition = hour?.condition?.text,
                 precipitation = hour?.precipMm,
@@ -318,8 +318,8 @@ fun ForecastResponseApiWA.toForecastWeatherData(): ForecastWeatherData {
                 pressure = hour?.pressureMb?.toDouble(),
                 humidity = hour?.humidity,
                 uvIndex = hour?.uv?.toDouble(),
-                maxTemp = TemperatureModel(hour?.dewpointC),
-                minTemp = TemperatureModel(hour?.heatindexC)
+                maxTemp = hour?.dewpointC?.let { TemperatureModel(it) },
+                minTemp = hour?.heatindexC?.let { TemperatureModel(it) }
             )
         } ?: listOf()
     } ?: listOf()

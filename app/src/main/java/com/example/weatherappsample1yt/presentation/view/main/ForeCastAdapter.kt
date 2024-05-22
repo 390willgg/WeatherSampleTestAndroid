@@ -111,9 +111,11 @@ class ForeCastAdapter : RecyclerView.Adapter<ForeCastAdapter.ForeCastViewHolder>
             R.string.temperatur_format, hour12, timeType
         )
 
-        holder.tempText.text = forecast.temp?.formatTemperature(
-            _temperatureUnitOptions,
-        ) ?: "N/A"
+        holder.tempText.text = _temperatureUnitOptions?.let {
+            forecast.temp?.formatTemperature(
+                it,
+            )
+        } ?: "N/A"
     }
 
     override fun getItemCount(): Int = differ.currentList.size

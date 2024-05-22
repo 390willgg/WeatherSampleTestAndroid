@@ -51,12 +51,14 @@ class ForecastItemDayAdapter :
             .placeholder(R.drawable.sunny_day_icon)
             .error(R.drawable.baseline_running_with_errors_24).into(holder.picWeatherDay)
 
-        holder.tempWeatherDayItem.text = formatTemperatureRange(
-            holder.itemView.context,
-            _temperatureUnitOptions,
-            forecast.minTemp?.valueTemperature,
-            forecast.maxTemp?.valueTemperature
-                )
+        holder.tempWeatherDayItem.text = _temperatureUnitOptions?.let {
+            formatTemperatureRange(
+                holder.itemView.context,
+                it,
+                forecast.minTemp,
+                forecast.maxTemp
+            )
+        }
             }
 
 

@@ -174,15 +174,21 @@ class MainActivity : AppCompatActivity() {
             cityText.text = response.city
             statusText.text = response.weatherStatus
             detailedStatusText.text = response.weatherDescription
-            currentTempTv.text = response.temperature?.formatTemperature(
-                weatherViewModel.temperatureUnit.value,
-            ) ?: "N/A"
-            maxTempText.text = response.maxTemperature?.formatTemperature(
-                weatherViewModel.temperatureUnit.value,
-            ) ?: "N/A"
-            minTempText.text = response.minTemperature?.formatTemperature(
-                weatherViewModel.temperatureUnit.value,
-            ) ?: "N/A"
+            currentTempTv.text = weatherViewModel.temperatureUnit.value?.let {
+                response.temperature.formatTemperature(
+                    it,
+                )
+            } ?: "N/A"
+            maxTempText.text = weatherViewModel.temperatureUnit.value?.let {
+                response.maxTemperature?.formatTemperature(
+                    it,
+                )
+            } ?: "N/A"
+            minTempText.text = weatherViewModel.temperatureUnit.value?.let {
+                response.minTemperature?.formatTemperature(
+                    it,
+                )
+            } ?: "N/A"
             humidityText.text = response.humidity.toString()
             windText.text = response.windSpeed.toString()
             rainPrecipitation.text = response.precipitation.toString()

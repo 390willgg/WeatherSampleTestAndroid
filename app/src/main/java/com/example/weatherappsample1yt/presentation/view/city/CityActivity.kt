@@ -52,21 +52,15 @@ fun CitySearchScreenPreview() {
 @AndroidEntryPoint
 class CityActivity : AppCompatActivity() {
     @Inject
-    lateinit var citiesListViewModelFactory: CityViewModel.Factory
-
-    @Inject
     lateinit var preferencesUseCase: PreferencesUseCase
+
     private val cityAdapter by lazy { CityAdapter() }
     private lateinit var binding: ActivityCityBinding
     private fun dpToPx(context: Context): Int {
         return (16 * context.resources.displayMetrics.density).toInt()
     }
 
-    private val citiesListViewModel: CityViewModel by viewModels {
-        CityViewModel.provideFactory(
-            citiesListViewModelFactory, preferencesUseCase
-        )
-    }
+    private val citiesListViewModel: CityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -19,9 +19,9 @@ fun ForecastResponseApiOW.toForecastWeatherData(): ForecastWeatherData {
     val hourlyDetails = this.list?.map { data ->
         HourlyDetail(
             time = data.dtTxt,
-            temp = TemperatureModel(data.main?.temp),
-            maxTemp = TemperatureModel(data.main?.tempMax),
-            minTemp = TemperatureModel(data.main?.tempMin),
+            temp = data.main?.temp?.let { TemperatureModel(it) },
+            maxTemp = data.main?.tempMax?.let { TemperatureModel(it) },
+            minTemp = data.main?.tempMin?.let { TemperatureModel(it) },
             feelsLike = data.main?.feelsLike,
             condition = data.weather?.firstOrNull()?.description,
             icon = data.weather?.firstOrNull()?.icon,
@@ -55,7 +55,7 @@ fun ForecastResponseApiOW.toForecastWeatherData(): ForecastWeatherData {
 
         DailyDetail(
             date = date,
-            temp = TemperatureModel(avgTemp),
+            temp = avgTemp?.let { TemperatureModel(it) },
             maxTemp = maxTemp,
             minTemp = minTemp,
             condition = hourlyList.firstOrNull()?.condition,
