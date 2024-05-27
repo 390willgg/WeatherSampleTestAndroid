@@ -1,4 +1,4 @@
-package com.example.weatherappsample1yt.presentation.di.core
+package com.example.weatherappsample1yt.presentation.di
 
 import android.content.Context
 import android.os.Build

@@ -34,10 +34,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherappsample1yt.R
 import com.example.weatherappsample1yt.data.model.format.DataItemCity
 import com.example.weatherappsample1yt.databinding.ActivityCityBinding
-import com.example.weatherappsample1yt.domain.useCase.preferencesUser.PreferencesUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -51,9 +49,6 @@ fun CitySearchScreenPreview() {
 
 @AndroidEntryPoint
 class CityActivity : AppCompatActivity() {
-    @Inject
-    lateinit var preferencesUseCase: PreferencesUseCase
-
     private val cityAdapter by lazy { CityAdapter() }
     private lateinit var binding: ActivityCityBinding
     private fun dpToPx(context: Context): Int {
@@ -94,11 +89,11 @@ class CityActivity : AppCompatActivity() {
         }
 
         citiesListViewModel.getCitiesList("London", 5)
-        
+
         citiesListViewModel.citiesList.observe(this) { cityWeatherData ->
             cityWeatherData?.let {
-                val cities: ArrayList<DataItemCity> = it.data
-                cities.forEach { city ->
+                val cities: ArrayList<DataItemCity>? = it.data
+                cities?.forEach { city ->
                     println(city.cityName)
                 }
             }

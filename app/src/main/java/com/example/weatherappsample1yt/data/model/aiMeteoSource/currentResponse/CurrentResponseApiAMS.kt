@@ -27,7 +27,6 @@ fun CurrentResponseApiAMS.toCurrentWeatherData(): CurrentWeatherData {
         minTemperature = TemperatureModel(current?.temperature ?: 0.0),
         weatherStatus = current?.summary ?: "",
         weatherDescription = current?.summary ?: "",
-        weatherIcon = current?.icon ?: "",
         windSpeed = current?.wind?.speed ?: 0.0,
         humidity = current?.humidity ?: 0,
         icon = current?.icon ?: "",

@@ -1,4 +1,4 @@
-package com.example.weatherappsample1yt.presentation.di.core
+package com.example.weatherappsample1yt.presentation.di
 
 import com.example.weatherappsample1yt.domain.useCase.serviceLocation.ServiceLocationUseCase
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModelFactory

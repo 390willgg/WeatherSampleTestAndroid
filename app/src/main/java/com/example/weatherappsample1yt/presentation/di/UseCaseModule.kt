@@ -1,5 +1,6 @@
-package com.example.weatherappsample1yt.presentation.di.core
+package com.example.weatherappsample1yt.presentation.di
 
+import androidx.lifecycle.ViewModelProvider
 import com.example.weatherappsample1yt.domain.repository.CityRepository
 import com.example.weatherappsample1yt.domain.repository.PreferencesRepository
 import com.example.weatherappsample1yt.domain.repository.ServiceLocationRepository

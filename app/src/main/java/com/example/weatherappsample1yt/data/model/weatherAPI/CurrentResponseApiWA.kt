@@ -99,7 +99,6 @@ data class CurrentResponseApiWA(
             minTemperature = TemperatureModel(current?.tempC?.toDouble() ?: 0.0),
             weatherStatus = current?.condition?.text ?: "",
             weatherDescription = current?.condition?.text ?: "",
-            weatherIcon = current?.condition?.icon ?: "",
             windSpeed = current?.windKph ?: 0.0,
             humidity = current?.humidity ?: 0,
             icon = current?.condition?.icon ?: "",

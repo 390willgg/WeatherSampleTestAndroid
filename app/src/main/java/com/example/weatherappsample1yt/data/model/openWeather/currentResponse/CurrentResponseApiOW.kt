@@ -33,7 +33,6 @@ data class CurrentResponseApiOW(
             minTemperature = TemperatureModel(this.main?.tempMin ?: 0.0),
             weatherStatus = this.weather?.get(0)?.main ?: "",
             weatherDescription = this.weather?.get(0)?.description ?: "",
-            weatherIcon = this.weather?.get(0)?.icon ?: "",
             windSpeed = this.wind?.speed ?: 0.0,
             humidity = this.main?.humidity ?: 0,
             icon = this.weather?.get(0)?.icon ?: "",

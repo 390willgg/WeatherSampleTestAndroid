@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
             rainPrecipitation.text = response.precipitation.toString()
 
             Glide.with(this@MainActivity).load(
-                iconMap[iconKey(response.weatherIcon.toString())] ?: R.drawable.sunny_day_icon
+                iconMap[iconKey(response.icon.toString())] ?: R.drawable.sunny_day_icon
             ).placeholder(R.drawable.sunny_day_icon)
                 .error(R.drawable.baseline_running_with_errors_24).into(weatherIcon)
         }
@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
     
     private fun fetchWeatherData(latitude : Double, longitude : Double) {
         weatherViewModel.getCurrentWeather(latitude, longitude)
-        weatherViewModel.getForecastWeather(latitude, longitude)
+        weatherViewModel.getForecastWeather()
     }
     
     override fun onDestroy() {

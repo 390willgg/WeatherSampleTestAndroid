@@ -98,56 +98,6 @@ class WeatherViewModel @AssistedInject constructor(
             }
         }
     }
-    
-    fun updateApiProvider(apiProvider : ApiProviderOptions) {
-        viewModelScope.launch {
-            try {
-                preferencesUseCase.saveApiPreferences(apiProvider)
-                Log.i("WeatherViewModel", "API provider updated: $apiProvider")
-            }
-            catch (e : Exception) {
-                Log.e("WeatherViewModel", "Error updating API provider", e)
-            }
-        }
-    }
-
-    fun loadApiProvider() {
-        viewModelScope.launch {
-            try {
-                val apiProvider = preferencesUseCase.getApiPreferences()
-                apiProvider?.let {
-                    getWeatherUseCase(it).getCurrentWeather(lat, lon, "metric")
-                    getWeatherUseCase(it).getForecastWeather(lat, lon, "metric")
-                }
-            } catch (e: Exception) {
-                Log.e("WeatherViewModel", "Error loading API provider", e)
-            }
-        }
-    }
-    
-    fun updateTemperatureUnit(unit : TemperatureUnitOptions) {
-        viewModelScope.launch {
-            try {
-                preferencesUseCase.saveTemperaturePreferences(unit)
-            }
-            catch (e : Exception) {
-                Log.e("WeatherViewModel", "Error updating temperature unit", e)
-            }
-        }
-    }
-    
-    fun loadTemperatureUnit() {
-        viewModelScope.launch {
-            try {
-                val temperatureUnit = preferencesUseCase.getTemperaturePreferences()
-                _temperatureUnit.postValue(temperatureUnit)
-            }
-            catch (e : Exception) {
-                Log.e("WeatherViewModel", "Error loading temperature unit", e)
-            }
-        }
-    }
-
 
     fun getCurrentWeather(lat: Double, lon: Double) {
         this.lat = lat
@@ -155,28 +105,18 @@ class WeatherViewModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 val apiProvider = preferencesUseCase.getApiPreferences()
-                val currentWeather = apiProvider?.let {
-                    getWeatherUseCase(it).getCurrentWeather(
-                        lat, lon, "metric"
-                    )
-                }
-                _currentWeather.postValue(currentWeather)
+                apiProvider?.let { fetchWeatherData(it) }
             } catch (e: Exception) {
                 Log.e("WeatherViewModel", "Error getting current weather", e)
             }
         }
     }
 
-    fun getForecastWeather(lat: Double, lon: Double) {
+    fun getForecastWeather() {
         viewModelScope.launch {
             try {
                 val apiProvider = preferencesUseCase.getApiPreferences()
-                val forecastWeather = apiProvider?.let {
-                    getWeatherUseCase(it).getForecastWeather(
-                        lat, lon, "metric"
-                    )
-                }
-                _forecastWeather.postValue(forecastWeather)
+                apiProvider?.let { fetchWeatherData(it) }
             } catch (e: Exception) {
                 Log.e("WeatherViewModel", "Error getting forecast weather", e)
             }

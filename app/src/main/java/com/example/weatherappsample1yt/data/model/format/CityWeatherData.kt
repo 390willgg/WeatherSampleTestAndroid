@@ -1,9 +1,13 @@
 package com.example.weatherappsample1yt.data.model.format
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class CityWeatherData(
-    val data: ArrayList<DataItemCity> = arrayListOf()
+    val data: ArrayList<DataItemCity>? = null
 )
 
+@Immutable
 data class DataItemCity(
     val cityName: String? = null,
     val country: String? = null,
