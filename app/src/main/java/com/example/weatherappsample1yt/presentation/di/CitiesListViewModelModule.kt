@@ -12,7 +12,7 @@ import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
-class ViewModelModule {
+class CitiesListViewModelModule {
     @Provides
     fun provideCitiesListUseCase(
         preferencesUseCase: PreferencesUseCase,

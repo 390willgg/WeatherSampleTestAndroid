@@ -32,7 +32,7 @@ class WeatherViewModel @AssistedInject constructor(
     private val _temperatureUnit = MutableLiveData<TemperatureUnitOptions?>()
     val temperatureUnit: LiveData<TemperatureUnitOptions?> = _temperatureUnit
 
-    private var weatherUseCase: WeatherUseCase? = null
+    private lateinit var weatherUseCase: WeatherUseCase
 
     private var lat: Double = 0.0
     private var lon: Double = 0.0
