@@ -3,7 +3,6 @@ package com.example.weatherappsample1yt.presentation.view.settings
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -11,7 +10,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.weatherappsample1yt.R
 import com.example.weatherappsample1yt.databinding.ActivitySettingBinding
-import com.example.weatherappsample1yt.presentation.view.main.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TITLE_TAG = "settingsActivityTitle"

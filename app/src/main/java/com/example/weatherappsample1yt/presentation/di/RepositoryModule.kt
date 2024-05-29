@@ -1,8 +1,6 @@
 package com.example.weatherappsample1yt.presentation.di
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.example.weatherappsample1yt.data.repository.city.getAMSCityListRepositoryImpl
 import com.example.weatherappsample1yt.data.repository.city.getOWCityListRepositoryImpl
 import com.example.weatherappsample1yt.data.repository.city.getWACityListRepositoryImpl
@@ -74,7 +72,7 @@ class RepositoryModule {
 
     @Singleton
     @Provides
-    fun providePreferencesRepository(dataSource : PreferenceDataSource): PreferencesRepository {
+    fun providePreferencesRepository(dataSource: PreferenceDataSource): PreferencesRepository {
         return getPreferenceRepositoryImpl(dataSource)
     }
 

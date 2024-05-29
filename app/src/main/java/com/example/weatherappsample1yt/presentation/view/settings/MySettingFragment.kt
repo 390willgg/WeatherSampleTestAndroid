@@ -5,8 +5,8 @@ import androidx.fragment.app.viewModels
 import androidx.preference.DropDownPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.weatherappsample1yt.R
-import com.example.weatherappsample1yt.presentation.view.main.ApiProviderOptions
-import com.example.weatherappsample1yt.presentation.view.main.TemperatureUnitOptions
+import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

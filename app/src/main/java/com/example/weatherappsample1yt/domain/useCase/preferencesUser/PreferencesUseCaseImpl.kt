@@ -1,8 +1,9 @@
 package com.example.weatherappsample1yt.domain.useCase.preferencesUser
 
 import com.example.weatherappsample1yt.domain.repository.PreferencesRepository
-import com.example.weatherappsample1yt.presentation.view.main.ApiProviderOptions
-import com.example.weatherappsample1yt.presentation.view.main.TemperatureUnitOptions
+import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
+import kotlinx.coroutines.flow.Flow
 
 private class PreferencesUseCaseImpl(private val repository: PreferencesRepository) :
     PreferencesUseCase {
@@ -14,11 +15,11 @@ private class PreferencesUseCaseImpl(private val repository: PreferencesReposito
         return repository.getTemperaturePreferences()
     }
 
-    override suspend fun observeApiPreferences(): kotlinx.coroutines.flow.Flow<ApiProviderOptions?> {
+    override fun observeApiPreferences(): Flow<ApiProviderOptions?> {
         return repository.observeApiPreferences()
     }
 
-    override suspend fun observeTemperaturePreferences(): kotlinx.coroutines.flow.Flow<TemperatureUnitOptions?> {
+    override fun observeTemperaturePreferences(): Flow<TemperatureUnitOptions?> {
         return repository.observeTemperaturePreferences()
     }
 

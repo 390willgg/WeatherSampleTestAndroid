@@ -12,6 +12,7 @@ import com.example.weatherappsample1yt.data.model.format.TemperatureModel.Compan
 import com.example.weatherappsample1yt.databinding.ForecastViewholderDayitemBinding
 import com.example.weatherappsample1yt.presentation.view.main.ForeCastAdapter.Companion.iconKey
 import com.example.weatherappsample1yt.presentation.view.main.ForeCastAdapter.Companion.iconMap
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -48,7 +49,7 @@ class ForecastItemDayAdapter :
 
         holder.dayText.text = dayOfWeek
         Glide.with(holder.itemView.context).load(drawableResourceId)
-            .placeholder(R.drawable.sunny_day_icon)
+            .placeholder(R.drawable.sunny_icon)
             .error(R.drawable.baseline_running_with_errors_24).into(holder.picWeatherDay)
 
         holder.tempWeatherDayItem.text = _temperatureUnitOptions?.let {
@@ -59,7 +60,7 @@ class ForecastItemDayAdapter :
                 forecast.maxTemp
             )
         }
-            }
+    }
 
 
     override fun getItemCount(): Int = differ.currentList.size

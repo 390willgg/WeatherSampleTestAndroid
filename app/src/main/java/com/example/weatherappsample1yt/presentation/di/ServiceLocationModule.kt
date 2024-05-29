@@ -11,12 +11,11 @@ import dagger.hilt.android.scopes.ActivityScoped
 @Module
 @InstallIn(ActivityComponent::class)
 object ServiceLocationModule {
-	
-	@Provides
-	@ActivityScoped
-	fun provideServiceLocationViewModelFactory(
-		useCase : ServiceLocationUseCase,
-	) : ServiceLocationViewModelFactory {
-		return ServiceLocationViewModelFactory(useCase)
-	}
+    @Provides
+    @ActivityScoped
+    fun provideServiceLocationViewModelFactory(
+        useCase : ServiceLocationUseCase,
+    ): ServiceLocationViewModelFactory {
+        return ServiceLocationViewModelFactory(useCase)
+    }
 }

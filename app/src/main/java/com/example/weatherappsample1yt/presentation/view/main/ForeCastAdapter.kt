@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.weatherappsample1yt.R
 import com.example.weatherappsample1yt.data.model.format.HourlyDetail
 import com.example.weatherappsample1yt.databinding.ForecastViewholderBinding
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -103,8 +104,11 @@ class ForeCastAdapter : RecyclerView.Adapter<ForeCastAdapter.ForeCastViewHolder>
         val iconType: String? = forecast.icon
         val drawableResourceId = iconMap[iconKey(iconType)] ?: R.drawable.sunny_icon
 
-        Glide.with(holder.itemView.context).load(drawableResourceId)
-            .placeholder(R.drawable.sunny_icon).error(R.drawable.baseline_running_with_errors_24)
+        Glide
+            .with(holder.itemView.context)
+            .load(drawableResourceId)
+            .placeholder(R.drawable.sunny_icon)
+            .error(R.drawable.baseline_running_with_errors_24)
             .into(holder.pic)
 
         holder.hourText.text = holder.itemView.context.getString(

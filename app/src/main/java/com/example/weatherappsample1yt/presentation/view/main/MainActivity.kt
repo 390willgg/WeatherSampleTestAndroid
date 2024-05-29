@@ -23,14 +23,16 @@ import com.example.weatherappsample1yt.R
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
 import com.example.weatherappsample1yt.databinding.ActivityMainBinding
-import com.example.weatherappsample1yt.domain.useCase.preferencesUser.PreferencesUseCase
+import com.example.weatherappsample1yt.domain.useCase.weather.WeatherUseCase
 import com.example.weatherappsample1yt.presentation.view.city.CityActivity
 import com.example.weatherappsample1yt.presentation.view.main.ForeCastAdapter.Companion.iconKey
 import com.example.weatherappsample1yt.presentation.view.main.ForeCastAdapter.Companion.iconMap
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModel
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModelFactory
 import com.example.weatherappsample1yt.presentation.view.settings.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +45,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var weatherViewModelFactory: WeatherViewModel.Factory
 
     @Inject
-    lateinit var preferencesUseCase: PreferencesUseCase
+    lateinit var weatherUseCase: Flow<@JvmSuppressWildcards WeatherUseCase>
+
+    private val weatherViewModel: WeatherViewModel by viewModels {
+        WeatherViewModel.provideFactory(weatherViewModelFactory, weatherUseCase)
+    }
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
@@ -52,9 +58,6 @@ class MainActivity : AppCompatActivity() {
     private var forecastItemDayAdapter: ForecastItemDayAdapter = ForecastItemDayAdapter()
 
     private lateinit var serviceLocationViewModel: ServiceLocationViewModel
-    private val weatherViewModel: WeatherViewModel by viewModels {
-        WeatherViewModel.provideFactory(weatherViewModelFactory, preferencesUseCase)
-    }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -111,21 +114,21 @@ class MainActivity : AppCompatActivity() {
         }
         popupMenu.show()
     }
-    
+
     private fun setUpRecyclerView() {
         binding.forecastView.apply {
             layoutManager =
                 LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
             adapter = foreCastAdapter
         }
-        
+
         binding.forecastView2.apply {
             layoutManager =
                 LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
             adapter = forecastItemDayAdapter
         }
     }
-    
+
     private fun checkAndRequestPermissions() {
         val requiredPermissions = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
@@ -139,7 +142,7 @@ class MainActivity : AppCompatActivity() {
             serviceLocationViewModel.getLocation(this)
         }
     }
-    
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             serviceLocationViewModel.location.observe(this@MainActivity) { location ->
@@ -169,6 +172,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentWeatherUI(response: CurrentWeatherData) {
+        Log.i("response", response.toString())
         binding.apply {
             progressBar.visibility = View.GONE
             cityText.text = response.city
@@ -178,17 +182,18 @@ class MainActivity : AppCompatActivity() {
                 response.temperature.formatTemperature(
                     it,
                 )
-            } ?: "N/A"
+            } ?: response.temperature.formatTemperature(TemperatureUnitOptions.Celsius)
+            Log.i("temperature", "temperature : " + response.temperature.toString())
             maxTempText.text = weatherViewModel.temperatureUnit.value?.let {
                 response.maxTemperature?.formatTemperature(
                     it,
                 )
-            } ?: "N/A"
+            } ?: response.maxTemperature?.formatTemperature(TemperatureUnitOptions.Celsius)
             minTempText.text = weatherViewModel.temperatureUnit.value?.let {
                 response.minTemperature?.formatTemperature(
                     it,
                 )
-            } ?: "N/A"
+            } ?: response.minTemperature?.formatTemperature(TemperatureUnitOptions.Celsius)
             humidityText.text = response.humidity.toString()
             windText.text = response.windSpeed.toString()
             rainPrecipitation.text = response.precipitation.toString()
@@ -202,20 +207,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateForecastUI(forecastResponse: ForecastWeatherData) {
         forecastResponse.forecasts?.dailyDetails?.let { dailyDetails ->
+            Log.i("dailyDetails", dailyDetails.toString())
             forecastItemDayAdapter.differ.submitList(dailyDetails)
             forecastItemDayAdapter.updateTemperatureUnitOptions(weatherViewModel.temperatureUnit.value)
         }
         forecastResponse.forecasts?.hourlyDetails?.let { hourlyDetails ->
+            Log.i("hourlyDetails", hourlyDetails.toString())
             foreCastAdapter.differ.submitList(hourlyDetails)
             foreCastAdapter.updateTemperatureUnitOptions(weatherViewModel.temperatureUnit.value)
         }
     }
-    
-    private fun fetchWeatherData(latitude : Double, longitude : Double) {
+
+    private fun fetchWeatherData(latitude: Double, longitude: Double) {
         weatherViewModel.getCurrentWeather(latitude, longitude)
         weatherViewModel.getForecastWeather()
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

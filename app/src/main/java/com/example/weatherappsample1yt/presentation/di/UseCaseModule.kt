@@ -1,6 +1,5 @@
 package com.example.weatherappsample1yt.presentation.di
 
-import androidx.lifecycle.ViewModelProvider
 import com.example.weatherappsample1yt.domain.repository.CityRepository
 import com.example.weatherappsample1yt.domain.repository.PreferencesRepository
 import com.example.weatherappsample1yt.domain.repository.ServiceLocationRepository
@@ -23,49 +22,49 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class UseCaseModule {
-    @Singleton
     @Provides
+    @Singleton
     @Named("WAWeather")
     fun provideWAWeatherUseCase(@Named("WAWeather") repository: WeatherRepository): WeatherUseCase =
         getWeatherUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("OWWeather")
     fun provideOWWeatherUseCase(@Named("OWWeather") repository: WeatherRepository): WeatherUseCase =
         getWeatherUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("AMSWeather")
     fun provideAMSWeatherUseCase(@Named("AMSWeather") repository: WeatherRepository): WeatherUseCase =
         getWeatherUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("AMSCity")
     fun provideAMSCityListUseCase(@Named("AMSCity") repository: CityRepository): CitiesListUseCase =
         getCitiesListUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("OWCity")
     fun provideOWCityListUseCase(@Named("OWCity") repository: CityRepository): CitiesListUseCase =
         getCitiesListUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("WACity")
     fun provideAWCityListUseCase(@Named("WACity") repository: CityRepository): CitiesListUseCase =
         getCitiesListUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     fun providePreferenceUseCase(repository: PreferencesRepository): PreferencesUseCase =
         getPreferencesUseCaseImpl(repository)
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideServiceLocationUseCase(repository: ServiceLocationRepository): ServiceLocationUseCase =
         getServiceLocationUseCaseImpl(repository)
 }

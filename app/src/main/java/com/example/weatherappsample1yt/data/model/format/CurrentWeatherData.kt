@@ -2,7 +2,7 @@ package com.example.weatherappsample1yt.data.model.format
 
 import android.content.Context
 import com.example.weatherappsample1yt.R
-import com.example.weatherappsample1yt.presentation.view.main.TemperatureUnitOptions
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import kotlin.math.roundToInt
 
 //hapus area dari default value dan null

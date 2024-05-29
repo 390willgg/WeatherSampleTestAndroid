@@ -3,8 +3,8 @@ package com.example.weatherappsample1yt.presentation.view.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherappsample1yt.domain.useCase.preferencesUser.PreferencesUseCase
-import com.example.weatherappsample1yt.presentation.view.main.ApiProviderOptions
-import com.example.weatherappsample1yt.presentation.view.main.TemperatureUnitOptions
+import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
+import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch

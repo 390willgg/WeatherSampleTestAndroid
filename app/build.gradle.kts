@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    kotlin("kapt")
+    alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
@@ -47,8 +47,8 @@ android {
     buildTypes.all { isCrunchPngs = false }
 }
 
-kapt {
-    correctErrorTypes = true
+ksp {
+    arg("ksp.incremental", "true")
 }
 
 hilt {
@@ -56,7 +56,7 @@ hilt {
 }
 
 //
-dependencies{
+dependencies {
     //retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
@@ -70,54 +70,53 @@ dependencies{
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     //gson
-    implementation (libs.gson)
+    implementation(libs.gson)
 
     implementation(libs.glide)
-    implementation (libs.blurview)
-    implementation (libs.weatherview)
+    implementation(libs.blurview)
+    implementation(libs.weatherview)
 
     implementation(libs.symbol.processing.api)
 
-    implementation (libs.play.services.location)
-    implementation (libs.androidx.viewpager2)
-    implementation (libs.androidx.activity.ktx)
-    implementation (libs.androidx.fragment.ktx)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.ui.text.android)
     implementation(libs.androidx.preference)
     debugImplementation(libs.androidx.ui.tooling)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 
     implementation(libs.dagger.android)
     implementation(libs.dagger.android.support)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.android.processor)
 
     implementation(libs.androidx.databinding.runtime)
 
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.play.services.location)
-    implementation (libs.kotlinx.coroutines.play.services)
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.kotlinx.coroutines.core)
-    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.preference.ktx)
 
-    implementation (libs.lottie)
-    implementation (libs.material)
+    implementation(libs.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
-    
+
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.inline)
     testImplementation(libs.androidx.core)
-    
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
