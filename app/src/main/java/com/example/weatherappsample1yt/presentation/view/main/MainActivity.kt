@@ -36,6 +36,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * MainActivity is the main screen of the application that displays the current and forecast weather data.
+ * It uses a WeatherViewModel to fetch the data and updates the UI based on the LiveData objects in the ViewModel.
+ *
+ * @property serviceLocationFactory Factory for creating ServiceLocationViewModel instances.
+ * @property weatherViewModelFactory Factory for creating WeatherViewModel instances.
+ * @property weatherUseCase Flow of WeatherUseCase objects.
+ * @property _binding Binding object that represents the view of the activity.
+ * @property foreCastAdapter Adapter for the forecast RecyclerView.
+ * @property forecastItemDayAdapter Adapter for the forecast item day RecyclerView.
+ * @property serviceLocationViewModel ViewModel for getting the current location.
+ * @property requestPermissionLauncher Launcher for the permission request contract.
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
@@ -59,6 +72,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var serviceLocationViewModel: ServiceLocationViewModel
 
+    /**
+     * Launcher for the permission request contract.
+     * It checks if all permissions are granted and if not, it shows a Toast message.
+     */
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -71,6 +88,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Called when the activity is starting.
+     * It sets up the view, checks and requests permissions, observes the ViewModel and sets up the RecyclerView.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -179,12 +200,12 @@ class MainActivity : AppCompatActivity() {
             cityText.text = response.city
             statusText.text = response.weatherStatus
             detailedStatusText.text = response.weatherDescription
+            Log.i("MainActivitty", "response.temperature: ${response.temperature}")
             currentTempTv.text = weatherViewModel.temperatureUnit.value?.let {
                 response.temperature.formatTemperature(
                     it,
                 )
             } ?: response.temperature.formatTemperature(TemperatureUnitOptions.Celsius)
-            Log.i("temperature", "temperature : " + response.temperature.toString())
             maxTempText.text = weatherViewModel.temperatureUnit.value?.let {
                 response.maxTemperature?.formatTemperature(
                     it,

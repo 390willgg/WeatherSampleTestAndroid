@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 interface BaseRepository
 
-fun <T> BaseRepository.getRetrofitService(serviceClass: Class<T>, baseUrl: String, client: OkHttpClient): T? {
+fun <T> getRetrofitService(serviceClass: Class<T>, baseUrl: String, client: OkHttpClient): T? {
     return try {
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)

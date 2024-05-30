@@ -10,7 +10,7 @@ import com.example.weatherappsample1yt.domain.repository.getRetrofitService
 import okhttp3.OkHttpClient
 
 private class OWCityListRemoteDataSourceImpl(
-    client : OkHttpClient,
+    client: OkHttpClient,
 ) : CityListRemoteDataSource, BaseRepository {
     private val service by lazy {
         return@lazy getRetrofitService(
@@ -19,8 +19,8 @@ private class OWCityListRemoteDataSourceImpl(
             client
         )
     }
-    
-    override suspend fun getCities(cityName : String, limit : Int) : CityWeatherData? {
+
+    override suspend fun getCities(cityName: String, limit: Int): CityWeatherData? {
         val response = service?.getCitiesList(
             cityName,
             limit,
@@ -33,6 +33,6 @@ private class OWCityListRemoteDataSourceImpl(
     }
 }
 
-fun getOWCityListRemoteDataSourceImpl(client : OkHttpClient) : CityListRemoteDataSource {
+fun getOWCityListRemoteDataSourceImpl(client: OkHttpClient): CityListRemoteDataSource {
     return OWCityListRemoteDataSourceImpl(client)
 }

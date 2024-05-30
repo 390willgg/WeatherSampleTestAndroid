@@ -6,7 +6,7 @@ import com.example.weatherappsample1yt.data.repository.city.dataSourceImpl.getAM
 import com.example.weatherappsample1yt.domain.repository.CityRepository
 import okhttp3.OkHttpClient
 
-private class AMSCityListRepositoryImpl: CityRepository {
+private class AMSCityListRepositoryImpl : CityRepository {
     private val apiKey = "f21ca166c8msh5a96ef3a0168171p118214jsn85d65948bad2"
     private val client = OkHttpClient.Builder().addInterceptor {
         val original = it.request()
@@ -19,7 +19,9 @@ private class AMSCityListRepositoryImpl: CityRepository {
         it.proceed(request)
     }.build()
 
-    val cityListRemoteDataSource: CityListRemoteDataSource = getAMSCityListRemoteDataSourceImpl(client)
+    val cityListRemoteDataSource: CityListRemoteDataSource =
+        getAMSCityListRemoteDataSourceImpl(client)
+
     override suspend fun getCitiesList(cityName: String, limit: Int): CityWeatherData? {
         return cityListRemoteDataSource.getCities(cityName, limit)
     }

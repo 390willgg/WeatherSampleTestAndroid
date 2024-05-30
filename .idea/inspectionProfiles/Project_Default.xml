@@ -16,7 +16,6 @@
     <inspection_tool class="AndroidLintPermissionNamingConvention" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintRegistered" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintSelectableText" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="AndroidLintStopShip" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintTypographyQuotes" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintUnsafeImplicitIntentLaunch" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintUnsupportedChromeOsHardware" enabled="true" level="ERROR" enabled_by_default="true" />

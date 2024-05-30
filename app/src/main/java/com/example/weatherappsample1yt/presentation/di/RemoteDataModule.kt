@@ -27,7 +27,8 @@ import okhttp3.OkHttpClient
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-private val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class DataStorePreference
@@ -76,7 +77,7 @@ class RemoteDataModule {
     fun provideWACityListRemoteDataSource(
         client: OkHttpClient
     ): CityListRemoteDataSource {
-        return getWACityListRemoteDataSourceImpl( client)
+        return getWACityListRemoteDataSourceImpl(client)
     }
 
     @Singleton
@@ -86,28 +87,28 @@ class RemoteDataModule {
     ): CityListRemoteDataSource {
         return getAMSCityListRemoteDataSourceImpl(client)
     }
-    
+
     @Singleton
     @Provides
-    fun provideServiceLocationDataSource(@ApplicationContext context : Context) : ServiceLocationDataSource {
+    fun provideServiceLocationDataSource(@ApplicationContext context: Context): ServiceLocationDataSource {
         return getServiceLocationDataSourceImpl(context)
     }
-    
+
     @Singleton
     @Provides
     @SharedPreferencesPreference
-    fun provideSharePreferencesDataSource(@ApplicationContext context : Context) : PreferenceDataSource =
+    fun provideSharePreferencesDataSource(@ApplicationContext context: Context): PreferenceDataSource =
         getSharedPreferencesDataSourceImpl(context)
-    
+
     @Singleton
     @Provides
     @DataStorePreference
-    fun provideDataStoreDataSource(dataStore : DataStore<Preferences>) : PreferenceDataSource =
+    fun provideDataStoreDataSource(dataStore: DataStore<Preferences>): PreferenceDataSource =
         getDataStoreDataSourceImpl(dataStore)
-    
+
     @Singleton
     @Provides
-    fun providePreferenceDataSource(context : Context) : PreferenceDataSource =
+    fun providePreferenceDataSource(context: Context): PreferenceDataSource =
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
             getSharedPreferencesDataSourceImpl(context)
         } else {

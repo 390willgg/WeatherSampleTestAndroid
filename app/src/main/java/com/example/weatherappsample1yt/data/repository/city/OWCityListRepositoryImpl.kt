@@ -6,7 +6,7 @@ import com.example.weatherappsample1yt.data.repository.city.dataSourceImpl.getOW
 import com.example.weatherappsample1yt.domain.repository.CityRepository
 import okhttp3.OkHttpClient
 
-private class OWCityListRepositoryImpl: CityRepository {
+private class OWCityListRepositoryImpl : CityRepository {
     private val apiKey = "49cac901dfcef84ab95c1c3d792d9a04"
     val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
