@@ -1,4 +1,4 @@
-package com.example.weatherappsample1yt.data.api.server
+package com.example.weatherappsample1yt.data.api
 
 import com.example.weatherappsample1yt.data.model.aiMeteoSource.cityResponse.CityResponseApiAMS
 import com.example.weatherappsample1yt.data.model.aiMeteoSource.currentResponse.CurrentResponseApiAMS

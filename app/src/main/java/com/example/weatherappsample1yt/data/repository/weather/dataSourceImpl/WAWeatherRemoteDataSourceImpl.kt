@@ -1,7 +1,7 @@
 package com.example.weatherappsample1yt.data.repository.weather.dataSourceImpl
 
 import android.util.Log
-import com.example.weatherappsample1yt.data.api.server.ApiServiceWA
+import com.example.weatherappsample1yt.data.api.ApiServiceWA
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
 import com.example.weatherappsample1yt.data.model.weatherAPI.CurrentResponseApiWA

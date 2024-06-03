@@ -19,47 +19,89 @@ private class DataStoreDataSourceImpl(private val dataStore: DataStore<Preferenc
     }
 
     override suspend fun saveApiPreferences(provider: ApiProviderOptions?) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.apiProvider] =
-                provider?.name ?: ApiProviderOptions.OPEN_WEATHER.name
-        }
+        savePreferenceKey(
+            dataStore,
+            PreferencesKeys.apiProvider,
+            provider,
+            ApiProviderOptions.OPEN_WEATHER
+        )
     }
 
     override suspend fun saveTemperaturePreferences(unit: TemperatureUnitOptions?) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.temperatureUnit] =
-                unit?.name ?: TemperatureUnitOptions.Celsius.name
-        }
+        savePreferenceKey(
+            dataStore,
+            PreferencesKeys.temperatureUnit,
+            unit,
+            TemperatureUnitOptions.Celsius
+        )
     }
 
     override suspend fun getApiPreferences(): ApiProviderOptions {
-        val preferences = dataStore.data.first()
-        val providerName =
-            preferences[PreferencesKeys.apiProvider] ?: ApiProviderOptions.OPEN_WEATHER.name
-        return ApiProviderOptions.valueOf(providerName)
+        return getPreferenceKey(
+            dataStore,
+            PreferencesKeys.apiProvider,
+            ApiProviderOptions.OPEN_WEATHER
+        ) { name -> ApiProviderOptions.valueOf(name) }
     }
 
     override suspend fun getTemperaturePreferences(): TemperatureUnitOptions {
-        val preferences = dataStore.data.first()
-        val unitName =
-            preferences[PreferencesKeys.temperatureUnit] ?: TemperatureUnitOptions.Celsius.name
-        return TemperatureUnitOptions.valueOf(unitName)
+        return getPreferenceKey(
+            dataStore,
+            PreferencesKeys.temperatureUnit,
+            TemperatureUnitOptions.Celsius
+        ) { name -> TemperatureUnitOptions.valueOf(name) }
     }
 
     override fun observeApiPreferences(): Flow<ApiProviderOptions?> {
-        return dataStore.data.map {
-            val providerName =
-                it[PreferencesKeys.apiProvider] ?: ApiProviderOptions.OPEN_WEATHER.name
-            ApiProviderOptions.valueOf(providerName)
-        }
+        return observePreferenceKey(
+            dataStore,
+            PreferencesKeys.apiProvider,
+            ApiProviderOptions.OPEN_WEATHER,
+            ApiProviderOptions::valueOf
+        )
     }
 
     override fun observeTemperaturePreferences(): Flow<TemperatureUnitOptions?> {
-        return dataStore.data.map {
-            val unitName =
-                it[PreferencesKeys.temperatureUnit] ?: TemperatureUnitOptions.Celsius.name
-            TemperatureUnitOptions.valueOf(unitName)
-        }
+        return observePreferenceKey(
+            dataStore,
+            PreferencesKeys.temperatureUnit,
+            TemperatureUnitOptions.Celsius,
+            TemperatureUnitOptions::valueOf
+        )
+    }
+}
+
+suspend fun <T> savePreferenceKey(
+    dataStore: DataStore<Preferences>,
+    key: Preferences.Key<String>,
+    value: T?,
+    default: T
+) where T : Enum<T> {
+    dataStore.edit { preferences ->
+        preferences[key] = value?.name ?: default.name
+    }
+}
+
+suspend fun <T> getPreferenceKey(
+    dataStore: DataStore<Preferences>,
+    key: Preferences.Key<String>,
+    default: T,
+    valueOf: (String) -> T
+): T {
+    val preferences = dataStore.data.first()
+    val name = preferences[key] ?: default.toString()
+    return valueOf(name)
+}
+
+fun <T> observePreferenceKey(
+    dataStore: DataStore<Preferences>,
+    key: Preferences.Key<String>,
+    default: T,
+    valueOf: (String) -> T
+): Flow<T?> {
+    return dataStore.data.map { preferences ->
+        val name = preferences[key] ?: default.toString()
+        valueOf(name)
     }
 }
 

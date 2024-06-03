@@ -1,4 +1,4 @@
-package com.example.weatherappsample1yt.data.api.server
+package com.example.weatherappsample1yt.data.api
 
 import com.example.weatherappsample1yt.data.model.openWeather.CityResponseApiOW
 import com.example.weatherappsample1yt.data.model.openWeather.currentResponse.CurrentResponseApiOW

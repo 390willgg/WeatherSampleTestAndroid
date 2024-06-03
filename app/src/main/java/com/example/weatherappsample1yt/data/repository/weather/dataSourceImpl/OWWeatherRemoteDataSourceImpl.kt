@@ -1,6 +1,6 @@
 package com.example.weatherappsample1yt.data.repository.weather.dataSourceImpl
 
-import com.example.weatherappsample1yt.data.api.server.ApiServiceOW
+import com.example.weatherappsample1yt.data.api.ApiServiceOW
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
 import com.example.weatherappsample1yt.data.model.openWeather.currentResponse.toCurrentWeatherData

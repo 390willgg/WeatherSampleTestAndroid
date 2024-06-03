@@ -1,6 +1,6 @@
 package com.example.weatherappsample1yt.data.repository.city.dataSourceImpl
 
-import com.example.weatherappsample1yt.data.api.server.ApiServiceWA
+import com.example.weatherappsample1yt.data.api.ApiServiceWA
 import com.example.weatherappsample1yt.data.model.format.CityWeatherData
 import com.example.weatherappsample1yt.data.model.weatherAPI.toCityWeatherData
 import com.example.weatherappsample1yt.data.repository.city.dataSource.CityListRemoteDataSource
