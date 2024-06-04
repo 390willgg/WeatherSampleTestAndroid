@@ -4,73 +4,51 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.example.weatherappsample1yt.data.repository.preferences.dataSource.PreferenceDataSource
-import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
-import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
-import kotlinx.coroutines.CoroutineScope
+import com.example.weatherappsample1yt.data.repository.preferences.dataSource.PreferenceKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("UNCHECKED_CAST")
 private class SharedPreferencesDataSourceImpl(context: Context) :
     PreferenceDataSource {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
-    private val _apiProviderFlow = MutableStateFlow<ApiProviderOptions?>(null)
-    private val apiProviderFlow: Flow<ApiProviderOptions?> = _apiProviderFlow
-
-    private val _temperatureUnitFlow = MutableStateFlow<TemperatureUnitOptions?>(null)
-    private val temperatureUnitFlow: Flow<TemperatureUnitOptions?> = _temperatureUnitFlow
-
-    init {
-        loadInitialPreferences()
-    }
-
-    private fun loadInitialPreferences() {
-        // This function is called in the init block to initialize the flows
-        CoroutineScope(Dispatchers.IO).launch {
-            _apiProviderFlow.value = getApiPreferences()
-            _temperatureUnitFlow.value = getTemperaturePreferences()
-        }
-    }
-
-    override suspend fun saveApiPreferences(provider: ApiProviderOptions?) {
+    override suspend fun <T> savePreference(key: PreferenceKey, defaultValue: T) {
+        val preferenceKey = key.key
         withContext(Dispatchers.IO) {
             sharedPreferences.edit {
-                putString("api_provider", provider?.name)
+                putString(preferenceKey, defaultValue.toString())
             }
-            _apiProviderFlow.value = provider
         }
     }
 
-    override suspend fun saveTemperaturePreferences(unit: TemperatureUnitOptions?) {
-        withContext(Dispatchers.IO) {
-            sharedPreferences.edit {
-                putString("temperature_unit", unit?.name)
-            }
-            _temperatureUnitFlow.value = unit
-        }
+    override suspend fun <T> getPreference(
+        key: PreferenceKey,
+        defaultValue: T,
+    ): T {
+        val preferenceKey = key.key
+        val preferenceValue = sharedPreferences.getString(preferenceKey, defaultValue.toString())
+        return preferenceValue as T
     }
 
-    override suspend fun getApiPreferences(): ApiProviderOptions? = withContext(Dispatchers.IO) {
-        sharedPreferences.getString("api_provider", null)?.let {
-            ApiProviderOptions.valueOf(it)
-        }
-    }
-
-    override suspend fun getTemperaturePreferences(): TemperatureUnitOptions? =
-        withContext(Dispatchers.IO) {
-            sharedPreferences.getString("temperature_unit", null)?.let {
-                TemperatureUnitOptions.valueOf(it)
+    override fun <T> observePreference(
+        key: PreferenceKey,
+        defaultValue: T,
+    ): Flow<T?> {
+        val preferenceKey = key.key
+        val flow = MutableStateFlow<T?>(null)
+        sharedPreferences.registerOnSharedPreferenceChangeListener { _, changedKey ->
+            if (changedKey == preferenceKey) {
+                val preferenceValue =
+                    sharedPreferences.getString(changedKey, defaultValue.toString())
+                flow.value = preferenceValue as T
             }
         }
-
-    override fun observeApiPreferences(): Flow<ApiProviderOptions?> = apiProviderFlow
-
-    override fun observeTemperaturePreferences(): Flow<TemperatureUnitOptions?> =
-        temperatureUnitFlow
+        return flow
+    }
 }
 
 fun getSharedPreferencesDataSourceImpl(context: Context): PreferenceDataSource =

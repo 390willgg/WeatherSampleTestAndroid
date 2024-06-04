@@ -1,14 +1,25 @@
 package com.example.weatherappsample1yt.data.repository.preferences.dataSource
 
-import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
-import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import kotlinx.coroutines.flow.Flow
 
 interface PreferenceDataSource {
-    suspend fun saveApiPreferences(provider: ApiProviderOptions?)
-    suspend fun saveTemperaturePreferences(unit: TemperatureUnitOptions?)
-    suspend fun getApiPreferences(): ApiProviderOptions?
-    suspend fun getTemperaturePreferences(): TemperatureUnitOptions?
-    fun observeApiPreferences(): Flow<ApiProviderOptions?>
-    fun observeTemperaturePreferences(): Flow<TemperatureUnitOptions?>
+    suspend fun <T> getPreference(
+        key: PreferenceKey,
+        defaultValue: T,
+    ): T
+
+    suspend fun <T> savePreference(
+        key: PreferenceKey,
+        defaultValue: T
+    )
+
+    fun <T> observePreference(
+        key: PreferenceKey,
+        defaultValue: T,
+    ): Flow<T?>
+}
+
+enum class PreferenceKey(val key: String) {
+    API_PROVIDER("api_provider"),
+    TEMPERATURE_UNIT("temperature_unit")
 }

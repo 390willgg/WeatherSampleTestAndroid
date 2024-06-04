@@ -1,6 +1,7 @@
 [versions]
 agp = "8.6.0-alpha03"
 composeBom = "2024.05.00"
+constraintlayoutCompose = "1.0.1"
 core = "1.5.0"
 daggerCompiler = "2.51.1"
 datastorePreferences = "1.1.1"
@@ -14,20 +15,20 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 kotlinxCoroutinesCore = "1.7.3"
 kotlinxCoroutinesAndroid = "1.8.0"
 kotlinxCoroutinesPlayServices = "1.7.3"
-lifecycleViewmodelKtx = "2.8.0"
+lifecycleViewmodelKtx = "2.8.1"
 material = "1.13.0-alpha02"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 mockitoCore = "3.11.2"
 okhttp = "4.12.0"
-playServicesLocation = "21.2.0"
+playServicesLocation = "21.3.0"
 preferenceKtx = "1.2.1"
 retrofit = "2.11.0"
-symbolProcessingApi = "1.9.23-1.0.20"
+symbolProcessingApi = "2.0.0-1.0.21"
 uiToolingPreview = "1.6.7"
 viewpager2 = "1.1.0"
 weatherview = "3.0.0"
@@ -40,6 +41,7 @@ preference = "1.2.1"
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }

@@ -5,7 +5,6 @@ import com.example.weatherappsample1yt.R
 import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import kotlin.math.roundToInt
 
-//hapus area dari default value dan null
 data class CurrentWeatherData(
     val icon: String? = null,
     val city: String? = null,
@@ -36,6 +35,7 @@ data class TemperatureModel(val valueTemperature: Double) {
         }
         return formattedValue
     }
+
     companion object {
         fun formatTemperatureRange(
             context: Context,
@@ -45,7 +45,11 @@ data class TemperatureModel(val valueTemperature: Double) {
         ): String {
             val formattedMinTemp = minTemp?.formatTemperature(unitTemp)
             val formattedMaxTemp = maxTemp?.formatTemperature(unitTemp)
-            return context.getString(R.string.temp_weather_day_item, formattedMinTemp, formattedMaxTemp)
+            return context.getString(
+                R.string.temp_weather_day_item,
+                formattedMinTemp,
+                formattedMaxTemp
+            )
         }
     }
 }

@@ -12,13 +12,25 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.weatherappsample1yt.R
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
@@ -27,6 +39,9 @@ import com.example.weatherappsample1yt.domain.useCase.weather.WeatherUseCase
 import com.example.weatherappsample1yt.presentation.view.city.CityActivity
 import com.example.weatherappsample1yt.presentation.view.main.ForeCastAdapter.Companion.iconKey
 import com.example.weatherappsample1yt.presentation.view.main.ForeCastAdapter.Companion.iconMap
+import com.example.weatherappsample1yt.presentation.view.main.componentUi.CurrentTemperatureComponentInformation
+import com.example.weatherappsample1yt.presentation.view.main.componentUi.WeatherCurrentStatus
+import com.example.weatherappsample1yt.presentation.view.main.componentUi.WeatherDetailCard
 import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModel
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModelFactory
@@ -36,19 +51,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * MainActivity is the main screen of the application that displays the current and forecast weather data.
- * It uses a WeatherViewModel to fetch the data and updates the UI based on the LiveData objects in the ViewModel.
- *
- * @property serviceLocationFactory Factory for creating ServiceLocationViewModel instances.
- * @property weatherViewModelFactory Factory for creating WeatherViewModel instances.
- * @property weatherUseCase Flow of WeatherUseCase objects.
- * @property _binding Binding object that represents the view of the activity.
- * @property foreCastAdapter Adapter for the forecast RecyclerView.
- * @property forecastItemDayAdapter Adapter for the forecast item day RecyclerView.
- * @property serviceLocationViewModel ViewModel for getting the current location.
- * @property requestPermissionLauncher Launcher for the permission request contract.
- */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
@@ -72,10 +74,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var serviceLocationViewModel: ServiceLocationViewModel
 
-    /**
-     * Launcher for the permission request contract.
-     * It checks if all permissions are granted and if not, it shows a Toast message.
-     */
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -88,10 +86,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Called when the activity is starting.
-     * It sets up the view, checks and requests permissions, observes the ViewModel and sets up the RecyclerView.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -194,36 +188,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentWeatherUI(response: CurrentWeatherData) {
-        Log.i("response", response.toString())
         binding.apply {
             progressBar.visibility = View.GONE
             cityText.text = response.city
-            statusText.text = response.weatherStatus
-            detailedStatusText.text = response.weatherDescription
-            Log.i("MainActivitty", "response.temperature: ${response.temperature}")
-            currentTempTv.text = weatherViewModel.temperatureUnit.value?.let {
-                response.temperature.formatTemperature(
-                    it,
+            detailLayout.setContent {
+                WeatherScreen(
+                    modifier = Modifier, response = response, weatherViewModel = weatherViewModel
                 )
-            } ?: response.temperature.formatTemperature(TemperatureUnitOptions.Celsius)
-            maxTempText.text = weatherViewModel.temperatureUnit.value?.let {
-                response.maxTemperature?.formatTemperature(
-                    it,
-                )
-            } ?: response.maxTemperature?.formatTemperature(TemperatureUnitOptions.Celsius)
-            minTempText.text = weatherViewModel.temperatureUnit.value?.let {
-                response.minTemperature?.formatTemperature(
-                    it,
-                )
-            } ?: response.minTemperature?.formatTemperature(TemperatureUnitOptions.Celsius)
-            humidityText.text = response.humidity.toString()
-            windText.text = response.windSpeed.toString()
-            rainPrecipitation.text = response.precipitation.toString()
-
-            Glide.with(this@MainActivity).load(
-                iconMap[iconKey(response.icon.toString())] ?: R.drawable.sunny_day_icon
-            ).placeholder(R.drawable.sunny_day_icon)
-                .error(R.drawable.baseline_running_with_errors_24).into(weatherIcon)
+            }
         }
     }
 
@@ -248,5 +220,82 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+}
+
+@Composable
+fun WeatherScreen(
+    modifier: Modifier = Modifier,
+    response: CurrentWeatherData?,
+    weatherViewModel: WeatherViewModel?
+) {
+    val responseState = remember { mutableStateOf(response) }
+    val weatherViewModelState = remember { mutableStateOf(weatherViewModel) }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
+    ) {
+        WeatherCurrentStatus(
+            modifier = Modifier,
+            topTitle = responseState.value?.weatherStatus,
+            bottomTitle = responseState.value?.weatherDescription
+        )
+
+        CurrentTemperatureComponentInformation(modifier = Modifier,
+            image = iconMap[iconKey(responseState.value?.icon.toString())]
+                ?: R.drawable.sunny_day_icon,
+            downTemp = weatherViewModelState.value?.temperatureUnit?.value?.let {
+                responseState.value?.minTemperature?.formatTemperature(
+                    it,
+                )
+            }
+                ?: responseState.value?.minTemperature?.formatTemperature(TemperatureUnitOptions.Celsius),
+            currentTemperature = weatherViewModelState.value?.temperatureUnit?.value.let {
+                it?.let { it1 ->
+                    responseState.value?.temperature?.formatTemperature(
+                        it1,
+                    )
+                }
+                    ?: responseState.value?.temperature?.formatTemperature(TemperatureUnitOptions.Celsius)
+            },
+            upTemp = weatherViewModelState.value?.temperatureUnit?.value?.let {
+                responseState.value?.maxTemperature?.formatTemperature(
+                    it,
+                )
+            }
+                ?: responseState.value?.maxTemperature?.formatTemperature(TemperatureUnitOptions.Celsius))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+        ) {
+            WeatherDetailCard(
+                modifier = modifier.weight(0.333f),
+                title = "${response?.precipitation} ~ 1 hour",
+                icon = painterResource(id = R.drawable.precipitation_rain_icon),
+                description = "Precipitation Rain"
+            )
+            WeatherDetailCard(
+                modifier = modifier.weight(0.333f),
+                title = "${response?.humidity} %",
+                icon = painterResource(id = R.drawable.humidity_icon),
+                description = "Humidity"
+            )
+            WeatherDetailCard(
+                modifier = modifier.weight(0.333f),
+                title = "${response?.windSpeed} m/s",
+                icon = painterResource(id = R.drawable.wind_icon),
+                description = "Wind Speed"
+            )
+        }
+    }
+    LaunchedEffect(response) {
+        responseState.value = response
+    }
+    LaunchedEffect(weatherViewModel) {
+        weatherViewModelState.value = weatherViewModel
     }
 }

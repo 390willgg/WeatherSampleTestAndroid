@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.constraintlayout.compose)
 
     implementation(libs.material)
     implementation(libs.androidx.core.ktx)

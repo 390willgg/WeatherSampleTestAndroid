@@ -5,9 +5,9 @@ enum class ApiProviderOptions {
 
     override fun toString(): String {
         return when (this) {
-            OPEN_WEATHER -> "Open Weather"
-            AI_METEOSOURCE -> "Ai Meteosource"
-            WEATHER_API -> "Weather Api"
+            OPEN_WEATHER -> "OPEN_WEATHER"
+            AI_METEOSOURCE -> "AI_METEOSOURCE"
+            WEATHER_API -> "WEATHER_API"
         }
     }
 }

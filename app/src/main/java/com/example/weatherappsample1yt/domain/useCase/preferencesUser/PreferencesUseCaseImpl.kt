@@ -1,5 +1,6 @@
 package com.example.weatherappsample1yt.domain.useCase.preferencesUser
 
+import android.util.Log
 import com.example.weatherappsample1yt.domain.repository.PreferencesRepository
 import com.example.weatherappsample1yt.presentation.AppState
 import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
@@ -40,6 +41,7 @@ private class PreferencesUseCaseImpl(private val repository: PreferencesReposito
         CoroutineScope((Dispatchers.IO)).launch {
             observeTemperaturePreferences().collect {
                 val newAppState = flow.value.copy(temperatureUnitOptions = it)
+                Log.i("PreferencesUseCaseImpl", "bindAppStateFlow: $newAppState")
                 flow.value = newAppState
             }
         }

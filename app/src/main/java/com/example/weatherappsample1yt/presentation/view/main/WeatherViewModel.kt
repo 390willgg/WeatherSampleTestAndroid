@@ -21,16 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * WeatherViewModel is a ViewModel that provides current and forecast weather data.
- * It uses a WeatherUseCase to fetch the data and updates LiveData objects that can be observed by the UI.
- *
- * @property weatherUseCaseFlow a Flow of WeatherUseCase objects.
- * @property appState a StateFlow of AppState objects.
- * @property currentWeather a LiveData of CurrentWeatherData that represents the current weather.
- * @property forecastWeather a LiveData of ForecastWeatherData that represents the forecast weather.
- * @property temperatureUnit a LiveData of TemperatureUnitOptions that represents the current temperature unit.
- */
 class WeatherViewModel @AssistedInject constructor(
     @Assisted private val weatherUseCaseFlow: Flow<@JvmSuppressWildcards WeatherUseCase>,
 ) : ViewModel() {
@@ -51,9 +41,6 @@ class WeatherViewModel @AssistedInject constructor(
     private var lat: Double = 0.0
     private var lon: Double = 0.0
 
-    /**
-     * Initializes the ViewModel by observing the weatherUseCaseFlow and appState.
-     */
     init {
         viewModelScope.launch {
             try {
@@ -72,9 +59,6 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Factory for creating WeatherViewModel instances with assisted injection.
-     */
     @AssistedFactory
     interface Factory {
         fun create(
@@ -82,9 +66,6 @@ class WeatherViewModel @AssistedInject constructor(
         ): WeatherViewModel
     }
 
-    /**
-     * Provides a ViewModelProvider.Factory for creating WeatherViewModel instances.
-     */
     @Suppress("UNCHECKED_CAST")
     companion object {
         fun provideFactory(
@@ -96,9 +77,6 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Fetches the current and forecast weather data.
-     */
     private fun fetchWeatherData() {
         viewModelScope.launch {
             try {
@@ -115,21 +93,12 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Fetches the current weather data for the specified latitude and longitude.
-     *
-     * @param lat the latitude.
-     * @param lon the longitude.
-     */
     fun getCurrentWeather(lat: Double, lon: Double) {
         this.lat = lat
         this.lon = lon
         fetchWeatherData()
     }
 
-    /**
-     * Fetches the forecast weather data.
-     */
     fun getForecastWeather() {
         fetchWeatherData()
     }
