@@ -57,6 +57,9 @@ hilt {
 
 //
 dependencies {
+    implementation(libs.androidx.viewpager2)
+    implementation (libs.androidx.fragment.ktx)
+
     //retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

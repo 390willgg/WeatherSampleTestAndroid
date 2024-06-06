@@ -25,9 +25,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherAppSample1YT">
         <activity
-            android:name=".presentation.view.MainActivity3"
-            android:exported="false" />
-        <activity
             android:name=".presentation.view.settings.SettingActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
@@ -36,6 +33,7 @@
             android:exported="false" />
         <activity
             android:name=".presentation.view.main.MainActivity"
+            android:launchMode="singleInstance"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

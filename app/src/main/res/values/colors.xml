@@ -3,17 +3,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_gray">#D3D3D3</color>
-
     <color name="colorPrimary">#356DF1</color>
     <color name="colorPrimaryDark">#356DF1</color>
     <color name="colorAccent">#FF000000</color>
     <color name="textColorPrimary">#212121</color>
     <color name="textColorSecondary">#757575</color>
     <color name="colorSecondaryTextDefaultMaterialLight">#8A000000</color>
-    <!--  Color Palette  -->
     <color name="colorPaletteBorder">#FEDBD0</color>
     <color name="colorLine">#E0E0E0</color>
-
     <color name="overlay_light_10">#1AFFFFFF</color>
     <color name="overlay_light_20">#33FFFFFF</color>
     <color name="overlay_light_30">#4DFFFFFF</color>

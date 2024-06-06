@@ -15,6 +15,7 @@ import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnit
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class WeatherViewModel @AssistedInject constructor(
     @Assisted private val weatherUseCaseFlow: Flow<@JvmSuppressWildcards WeatherUseCase>,
 ) : ViewModel() {
+
     @Inject
     lateinit var appState: StateFlow<AppState>
 
@@ -37,9 +39,11 @@ class WeatherViewModel @AssistedInject constructor(
     val temperatureUnit: LiveData<TemperatureUnitOptions?> = _temperatureUnit
 
     private lateinit var weatherUseCase: WeatherUseCase
+    private var weatherUseCaseInitialized = CompletableDeferred<Unit>()
+    private var locationSet = CompletableDeferred<Unit>()
 
-    private var lat: Double = 0.0
-    private var lon: Double = 0.0
+    private var lat: Double? = null
+    private var lon: Double? = null
 
     init {
         viewModelScope.launch {
@@ -47,6 +51,8 @@ class WeatherViewModel @AssistedInject constructor(
                 launch {
                     weatherUseCaseFlow.collect {
                         weatherUseCase = it
+                        weatherUseCaseInitialized.complete(Unit)
+                        locationSet.await()
                         fetchWeatherData()
                         appState.asLiveData().observeForever { appState ->
                             _temperatureUnit.value = appState.temperatureUnitOptions
@@ -77,29 +83,46 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
-    private fun fetchWeatherData() {
-        viewModelScope.launch {
-            try {
-                val currentWeatherDeferred =
-                    async { weatherUseCase.getCurrentWeather(lat, lon, "metric") }
-                val forecastWeatherDeferred =
-                    async { weatherUseCase.getForecastWeather(lat, lon, "metric") }
-
-                _currentWeather.value = currentWeatherDeferred.await()
-                _forecastWeather.value = forecastWeatherDeferred.await()
-            } catch (e: Exception) {
-                Log.e("WeatherViewModel", "Error fetching weather data", e)
-            }
-        }
-    }
-
-    fun getCurrentWeather(lat: Double, lon: Double) {
+    suspend fun setLocation(lat: Double, lon: Double) {
+        weatherUseCaseInitialized.await()
         this.lat = lat
         this.lon = lon
-        fetchWeatherData()
+        locationSet.complete(Unit)
     }
 
-    fun getForecastWeather() {
-        fetchWeatherData()
+    private fun fetchWeatherData() {
+        lat?.let { latitude ->
+            lon?.let { longitude ->
+                viewModelScope.launch {
+                    try {
+                        val currentWeatherDeferred =
+                            async {
+                                weatherUseCase.getCurrentWeather(
+                                    latitude,
+                                    longitude,
+                                    "metric"
+                                )
+                            }
+                        val forecastWeatherDeferred =
+                            async {
+                                weatherUseCase.getForecastWeather(
+                                    latitude,
+                                    longitude,
+                                    "metric"
+                                )
+                            }
+
+                        _currentWeather.value = currentWeatherDeferred.await()
+                        _forecastWeather.value = forecastWeatherDeferred.await()
+                    } catch (e: Exception) {
+                        Log.e("WeatherViewModel", "Error fetching weather data", e)
+                    }
+                }
+            } ?: run {
+                throw IllegalStateException("Longitude must be set before fetching weather data")
+            }
+        } ?: run {
+            throw IllegalStateException("Latitude must be set before fetching weather data")
+        }
     }
 }

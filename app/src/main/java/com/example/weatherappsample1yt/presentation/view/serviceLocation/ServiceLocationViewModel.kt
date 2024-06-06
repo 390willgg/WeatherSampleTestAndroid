@@ -10,8 +10,8 @@ import com.example.weatherappsample1yt.domain.useCase.serviceLocation.ServiceLoc
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ServiceLocationViewModel @Inject constructor(private val useCase: ServiceLocationUseCase) : ViewModel() {
-
+class ServiceLocationViewModel @Inject constructor(private val useCase: ServiceLocationUseCase) :
+    ViewModel() {
     private val _location = MutableLiveData<Location?>()
     val location: MutableLiveData<Location?> = _location
 

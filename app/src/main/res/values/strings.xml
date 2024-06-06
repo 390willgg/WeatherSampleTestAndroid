@@ -129,4 +129,5 @@
     <string name="currentMainTemperature">%s</string>
     <string name="maxMainTemperatureCurrent">%s</string>
     <string name="minMainTemperatureCurrent">%s</string>
+    <string name="weathericons">WeatherIcons</string>
 </resources>

@@ -39,7 +39,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_weight="1"
-        android:contentDescription="TODO"
+        android:contentDescription="@string/weathericons"
         app:srcCompat="@drawable/sunny_icon" />
 
     <TextView

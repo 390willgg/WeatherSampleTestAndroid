@@ -41,6 +41,7 @@ class CityAdapter : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
                 putExtra("lat", city.latitude)
                 putExtra("lon", city.longitude)
                 putExtra("name", city.cityName)
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             }
             binding.root.context.startActivity(intent)
         }

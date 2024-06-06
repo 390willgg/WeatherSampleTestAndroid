@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CityViewModel @Inject constructor(
     private val citiesListUseCase: CitiesListUseCase
-): ViewModel() {
+) : ViewModel() {
     private val _citiesList = MutableStateFlow<CityWeatherData?>(null)
     val citiesList: LiveData<CityWeatherData?> = _citiesList.asLiveData()
 
