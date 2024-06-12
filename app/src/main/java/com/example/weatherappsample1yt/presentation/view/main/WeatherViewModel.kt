@@ -9,6 +9,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weatherappsample1yt.data.model.format.CurrentWeatherData
 import com.example.weatherappsample1yt.data.model.format.ForecastWeatherData
+import com.example.weatherappsample1yt.domain.useCase.preferencesUser.PreferencesUseCase
 import com.example.weatherappsample1yt.domain.useCase.weather.WeatherUseCase
 import com.example.weatherappsample1yt.presentation.AppState
 import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
@@ -25,6 +26,8 @@ import javax.inject.Inject
 class WeatherViewModel @AssistedInject constructor(
     @Assisted private val weatherUseCaseFlow: Flow<@JvmSuppressWildcards WeatherUseCase>,
 ) : ViewModel() {
+    @Inject
+    lateinit var preferencesUseCase: PreferencesUseCase
 
     @Inject
     lateinit var appState: StateFlow<AppState>
@@ -89,6 +92,7 @@ class WeatherViewModel @AssistedInject constructor(
         this.lon = lon
         locationSet.complete(Unit)
     }
+
 
     private fun fetchWeatherData() {
         lat?.let { latitude ->

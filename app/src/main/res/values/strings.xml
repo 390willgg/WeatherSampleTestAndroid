@@ -130,4 +130,6 @@
     <string name="maxMainTemperatureCurrent">%s</string>
     <string name="minMainTemperatureCurrent">%s</string>
     <string name="weathericons">WeatherIcons</string>
+    <string name="delete_item">Delete Item</string>
+    <string name="london">London</string>
 </resources>

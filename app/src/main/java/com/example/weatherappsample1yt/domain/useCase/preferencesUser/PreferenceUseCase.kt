@@ -1,5 +1,6 @@
 package com.example.weatherappsample1yt.domain.useCase.preferencesUser
 
+import com.example.weatherappsample1yt.data.model.format.CityData
 import com.example.weatherappsample1yt.presentation.AppState
 import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
 import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
@@ -14,4 +15,10 @@ interface PreferencesUseCase {
     fun bindAppStateFlow(flow: MutableStateFlow<AppState>)
     fun observeApiPreferences(): Flow<ApiProviderOptions?>
     fun observeTemperaturePreferences(): Flow<TemperatureUnitOptions?>
+
+    suspend fun saveCityData(cityData: CityData?)
+    suspend fun getCityData(): List<CityData>?
+    suspend fun deleteCityData(positionData: Int)
+    suspend fun isCityDataExist(cityData: CityData): Boolean
+    fun observeCityData(): Flow<List<CityData>?>
 }

@@ -10,21 +10,27 @@ import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.weatherappsample1yt.R
+import com.example.weatherappsample1yt.data.model.format.CityData
 import com.example.weatherappsample1yt.databinding.ActivityMainBinding
 import com.example.weatherappsample1yt.presentation.view.city.CityActivity
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModel
 import com.example.weatherappsample1yt.presentation.view.serviceLocation.ServiceLocationViewModelFactory
 import com.example.weatherappsample1yt.presentation.view.settings.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,10 +38,14 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var serviceLocationFactory: ServiceLocationViewModelFactory
 
-    private val pagerAdapter by lazy { ScreenSlidePagerAdapter(this) }
+    private val cityDataViewModel: CityDataViewModel by viewModels()
+    private lateinit var serviceLocationViewModel: ServiceLocationViewModel
+
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private lateinit var serviceLocationViewModel: ServiceLocationViewModel
+
+    private lateinit var viewPager: ViewPager2
+    private val pagerAdapter by lazy { ScreenSlidePagerAdapter(this) }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -49,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,31 +78,36 @@ class MainActivity : AppCompatActivity() {
             showPopMenu(it)
         }
 
-        // Instantiate a ViewPager2 and a PagerAdapter.
         viewPager = findViewById(R.id.viewPager)
         viewPager.adapter = pagerAdapter
 
         checkAndRequestPermissions()
         binding.viewPager.adapter = pagerAdapter
-    }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        if (intent.hasExtra("lat") && intent.hasExtra("lon")) {
-            val latitude = intent.getDoubleExtra("lat", 0.0)
-            val longitude = intent.getDoubleExtra("lon", 0.0)
-            val cityName = intent.getStringExtra("name") ?: "Unknown"
-            addCityFragment(latitude, longitude, cityName)
-        } else {
-            serviceLocationViewModel.getLocation(this)
-            serviceLocationViewModel.location.observe(this) { location ->
-                val latitude = location?.latitude ?: 0.0
-                val longitude = location?.longitude ?: 0.0
-                val cityName = intent.getStringExtra("name") ?: "Unknown"
-                addCityFragment(latitude, longitude, cityName)
+        serviceLocationViewModel.location.observe(this) {
+            it?.let {
+                cityDataViewModel.addCityData(CityData(it.latitude, it.longitude, "Unknown"))
             }
         }
+
+        cityDataViewModel.removedItemPosition.observe(this) {
+            it?.let {
+                Log.i("MainActivity", "Removed item position: $it")
+                CoroutineScope(Dispatchers.Main).launch {
+                    pagerAdapter.removeFragments(it)
+                }
+            }
+        }
+
+        cityDataViewModel.observerCityData().observe(this) {
+            Log.i("MainActivity", "CityData: $it")
+            it?.let { cityDataList ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    pagerAdapter.updateFragments(cityDataList)
+                }
+            }
+        }
+
     }
 
     private fun showPopMenu(view: View) {
@@ -132,39 +146,76 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addCityFragment(latitude: Double?, longitude: Double, cityName: String) {
-        Log.i("MainActivity", "MainActivity hashCode: ${this.hashCode()}")
-        Log.i("MainActivity", "PagerAdapter hashCode: ${pagerAdapter.hashCode()}")
-        val cityData = CityData(latitude ?: 0.0, longitude, cityName)
-        pagerAdapter.addFragment(cityData)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
 
     private inner class ScreenSlidePagerAdapter(fa: AppCompatActivity) : FragmentStateAdapter(fa) {
-        private val fragments = mutableListOf<Fragment>()
-        private val cityData = mutableListOf<CityData>()
+        var cityData = listOf<CityData>()
+            set(value) {
+                val diffCallback = object : DiffUtil.Callback() {
+                    override fun getOldListSize() = field.size
+                    override fun getNewListSize() = value.size
+                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                        field[oldItemPosition] == value[newItemPosition]
+
+                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                        field[oldItemPosition] == value[newItemPosition]
+                }
+                val diffResult = DiffUtil.calculateDiff(diffCallback)
+                field = value
+                diffResult.dispatchUpdatesTo(this)
+            }
 
         fun addFragment(cityData: CityData) {
-            this.cityData.add(cityData)
-            val fragment = LocationFragment.newInstance(
-                cityData.latitude, cityData.longitude, cityData.cityName
-            )
-            this.fragments.add(fragment)
-
-            Log.i("MainActivity", "Fragment size: ${fragments.size}")
-            Log.i("MainActivity", "Fragment contains: $fragments")
-            notifyItemInserted(fragments.size - 1)
+            this.cityData += cityData
+            CoroutineScope(Dispatchers.Main).launch {
+                notifyDataSetChanged()
+            }
         }
 
-        override fun getItemCount(): Int = fragments.size
-        override fun createFragment(position: Int): Fragment = fragments[position]
-    }
+        fun clearFragments() {
+            this.cityData = emptyList()
+            CoroutineScope(Dispatchers.Main).launch {
+                notifyDataSetChanged()
+            }
+        }
 
-    data class CityData(
-        val latitude: Double, val longitude: Double, val cityName: String
-    )
+        fun removeFragments(position: Int) {
+            if (position < cityData.size) {
+                this.cityData = this.cityData.filterIndexed() { index, _ -> index != position }
+                CoroutineScope(Dispatchers.Main).launch {
+                    notifyItemRemoved(position)
+                }
+            }
+        }
+
+        fun updateFragments(newCityData: List<CityData>) {
+            clearFragments()
+            newCityData.forEach { cityData ->
+                addFragment(cityData)
+            }
+        }
+
+        override fun getItemCount(): Int = cityData.size
+
+        override fun createFragment(position: Int): Fragment {
+            val cityDataItem = cityData[position]
+            return LocationFragment.newInstance(
+                cityDataItem.latitude, cityDataItem.longitude, cityDataItem.cityName
+            )
+        }
+
+        override fun getItemId(position: Int): Long {
+            return cityData[position].latitude.hashCode()
+                .toLong() * 31 + cityData[position].longitude.hashCode()
+        }
+
+        override fun containsItem(itemId: Long): Boolean {
+            return cityData.any {
+                (it.latitude.hashCode().toLong() * 31 + it.longitude.hashCode()) == itemId
+            }
+        }
+    }
 }

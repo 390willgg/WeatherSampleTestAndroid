@@ -1,6 +1,7 @@
 package com.example.weatherappsample1yt.domain.useCase.preferencesUser
 
 import android.util.Log
+import com.example.weatherappsample1yt.data.model.format.CityData
 import com.example.weatherappsample1yt.domain.repository.PreferencesRepository
 import com.example.weatherappsample1yt.presentation.AppState
 import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
@@ -29,6 +30,36 @@ private class PreferencesUseCaseImpl(private val repository: PreferencesReposito
         return repository.observeTemperaturePreferences()
     }
 
+    override suspend fun saveCityData(cityData: CityData?) {
+        Log.i("PreferencesUseCaseImpl", "saveCityData: $cityData")
+        repository.saveCityData(cityData)
+        Log.i("PreferencesUseCaseImpl", "saveCityData: ${repository.getCityData()}")
+    }
+
+    override suspend fun getCityData(): List<CityData>? {
+        Log.i(
+            "PreferencesUseCaseImpl", "getCityData: ${repository.getCityData()}"
+        )
+        return repository.getCityData()
+    }
+
+    override suspend fun deleteCityData(positionData: Int) {
+        Log.i("PreferencesUseCaseImpl", "deleteCityData: $positionData")
+        repository.deleteCityData(positionData)
+    }
+
+    override suspend fun isCityDataExist(cityData: CityData): Boolean {
+        Log.i("PreferencesUseCaseImpl", "isCityDataExist: $cityData")
+        val existingCityData = getCityData() ?: return false
+        return existingCityData.any {
+            it.cityName == cityData.cityName
+        }
+    }
+
+    override fun observeCityData(): Flow<List<CityData>?> {
+        return repository.observeCityData()
+    }
+
     override suspend fun saveApiPreferences(provider: ApiProviderOptions?) {
         repository.saveApiPreferences(provider)
     }
@@ -38,7 +69,7 @@ private class PreferencesUseCaseImpl(private val repository: PreferencesReposito
     }
 
     override fun bindAppStateFlow(flow: MutableStateFlow<AppState>) {
-        CoroutineScope((Dispatchers.IO)).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             observeTemperaturePreferences().collect {
                 val newAppState = flow.value.copy(temperatureUnitOptions = it)
                 Log.i("PreferencesUseCaseImpl", "bindAppStateFlow: $newAppState")

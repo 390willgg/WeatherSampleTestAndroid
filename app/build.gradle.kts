@@ -58,7 +58,7 @@ hilt {
 //
 dependencies {
     implementation(libs.androidx.viewpager2)
-    implementation (libs.androidx.fragment.ktx)
+    implementation(libs.androidx.fragment.ktx)
 
     //retrofit
     implementation(libs.retrofit)
@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.ui.text.android)
     implementation(libs.androidx.preference)
+    implementation(libs.androidx.legacy.support.v4)
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.hilt.android.compiler)
 

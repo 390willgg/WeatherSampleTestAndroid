@@ -41,7 +41,7 @@ data class CurrentResponseApiWA(
         @SerializedName("pressure_mb")
         val pressureMb: Int?,
         @SerializedName("temp_c")
-        val tempC: Int?,
+        val tempC: Double?,
         @SerializedName("temp_f")
         val tempF: Double?,
         @SerializedName("uv")
@@ -95,8 +95,8 @@ data class CurrentResponseApiWA(
             latitude = location?.lat ?: 0.0,
             longitude = location?.lon ?: 0.0,
             temperature = TemperatureModel(current?.feelslikeC ?: 0.0),
-            maxTemperature = TemperatureModel(current?.tempC?.toDouble() ?: 0.0),
-            minTemperature = TemperatureModel(current?.tempC?.toDouble() ?: 0.0),
+            maxTemperature = TemperatureModel(current?.tempC ?: 0.0),
+            minTemperature = TemperatureModel(current?.tempC ?: 0.0),
             weatherStatus = current?.condition?.text ?: "",
             weatherDescription = current?.condition?.text ?: "",
             windSpeed = current?.windKph ?: 0.0,

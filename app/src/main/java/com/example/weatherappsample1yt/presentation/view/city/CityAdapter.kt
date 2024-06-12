@@ -1,17 +1,26 @@
 package com.example.weatherappsample1yt.presentation.view.city
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherappsample1yt.data.model.format.CityData
 import com.example.weatherappsample1yt.data.model.format.DataItemCity
 import com.example.weatherappsample1yt.databinding.CityViewholderBinding
 import com.example.weatherappsample1yt.presentation.view.main.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CityAdapter : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
+class CityAdapter @Inject constructor(private val saveData: (cityData: CityData) -> Unit) :
+    RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
         val binding =
@@ -37,13 +46,25 @@ class CityAdapter : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
 
         private fun navigateToMainActivity(city: DataItemCity) {
             Toast.makeText(binding.root.context, "Chip clicked", Toast.LENGTH_SHORT).show()
-            val intent = Intent(binding.root.context, MainActivity::class.java).apply {
-                putExtra("lat", city.latitude)
-                putExtra("lon", city.longitude)
-                putExtra("name", city.cityName)
-                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            scope.launch {
+                try {
+                    saveData(
+                        CityData(
+                            city.latitude ?: 0.0,
+                            city.longitude ?: 0.0,
+                            city.cityName ?: "Unknown City"
+                        )
+                    )
+                    withContext(Dispatchers.Main) {
+                        val intent = Intent(binding.root.context, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        binding.root.context.startActivity(intent)
+                    }
+                } catch (e: Exception) {
+                    Log.e("CityAdapter", "Error saving city data", e)
+                    e.printStackTrace()
+                }
             }
-            binding.root.context.startActivity(intent)
         }
     }
 

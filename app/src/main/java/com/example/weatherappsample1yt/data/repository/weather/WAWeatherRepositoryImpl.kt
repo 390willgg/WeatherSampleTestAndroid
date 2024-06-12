@@ -33,7 +33,16 @@ private class WAWeatherRepositoryImpl : WeatherRepository {
     override suspend fun getForecastWeatherData(
         lat: Double, lon: Double, units: String
     ): ForecastWeatherData? {
-        Log.d("Repository wa weather data", "lat: $lat, lon: $lon, units: $units: ${weatherRemoteDataSource.getForecast(lat, lon, units)}")
+        Log.d(
+            "Repository wa weather data",
+            "lat: $lat, lon: $lon, units: $units: ${
+                weatherRemoteDataSource.getForecast(
+                    lat,
+                    lon,
+                    units
+                )
+            }"
+        )
         return weatherRemoteDataSource.getForecast(lat, lon, units)
     }
 }

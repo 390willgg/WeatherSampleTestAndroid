@@ -11,10 +11,13 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.example.weatherappsample1yt.data.model.format.CityData
 import com.example.weatherappsample1yt.data.repository.preferences.dataSource.PreferenceDataSource
 import com.example.weatherappsample1yt.data.repository.preferences.dataSource.PreferenceKey
 import com.example.weatherappsample1yt.presentation.view.options.ApiProviderOptions
 import com.example.weatherappsample1yt.presentation.view.options.TemperatureUnitOptions
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -81,6 +84,45 @@ private class DataStoreDataSourceImpl(private val dataStore: DataStore<Preferenc
             else -> {
                 throw IllegalArgumentException("Type not supported")
             }
+        }
+    }
+
+    override suspend fun saveCityData(cityData: CityData?) {
+        val currentCityDataList = getCityData()?.toMutableList() ?: mutableListOf()
+        cityData?.let { currentCityDataList.add(it) }
+        val preferenceKey = stringPreferencesKey(PreferenceKey.CITY_DATA.key)
+        val cityDataString = Gson().toJson(currentCityDataList)
+        dataStore.edit { preferences ->
+            preferences[preferenceKey] = cityDataString
+        }
+    }
+
+    override suspend fun getCityData(): List<CityData>? {
+        val preferenceKey = stringPreferencesKey(PreferenceKey.CITY_DATA.key)
+        val preferences = dataStore.data.first()
+        val cityDataString = preferences[preferenceKey]
+        return cityDataString.let {
+            Gson().fromJson(it, object : TypeToken<List<CityData>>() {}.type)
+        }
+    }
+
+    override suspend fun deleteCityData(positionData: Int) {
+        val currentCityDataList = getCityData()?.toMutableList() ?: mutableListOf()
+        val preferenceKey = stringPreferencesKey(PreferenceKey.CITY_DATA.key)
+        if (positionData < currentCityDataList.size) {
+            currentCityDataList.removeAt(positionData)
+            val cityDataString = Gson().toJson(currentCityDataList)
+            dataStore.edit { preferences ->
+                preferences[preferenceKey] = cityDataString
+            }
+        }
+    }
+
+    override fun observeCityData(): Flow<List<CityData>?> {
+        val preferenceKey = stringPreferencesKey(PreferenceKey.CITY_DATA.key)
+        return dataStore.data.map { preferences ->
+            val cityDataString = preferences[preferenceKey]
+            Gson().fromJson(cityDataString, object : TypeToken<List<CityData>>() {}.type)
         }
     }
 }

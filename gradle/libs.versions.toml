@@ -20,7 +20,7 @@ kotlinxCoroutinesCore = "1.7.3"
 kotlinxCoroutinesAndroid = "1.8.0"
 kotlinxCoroutinesPlayServices = "1.7.3"
 lifecycleViewmodelKtx = "2.8.1"
-material = "1.13.0-alpha02"
+material = "1.13.0-alpha03"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 mockitoCore = "3.11.2"
@@ -36,6 +36,7 @@ databindingRuntime = "8.4.1"
 uiTextAndroid = "1.6.7"
 uiTooling = "1.6.7"
 preference = "1.2.1"
+legacySupportV4 = "1.0.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
@@ -85,6 +86,7 @@ androidx-databinding-runtime = { group = "androidx.databinding", name = "databin
 androidx-ui-text-android = { group = "androidx.compose.ui", name = "ui-text-android", version.ref = "uiTextAndroid" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
